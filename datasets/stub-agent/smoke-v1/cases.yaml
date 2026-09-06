@@ -1,0 +1,78 @@
+dataset:
+  name: stub-agent-smoke-v1
+  description: >
+    Small smoke-test dataset for the stub agent adapter (docs/roadmap.md Phase 1).
+    Covers each root-cause keyword the stub agent recognizes, one genuinely ambiguous
+    case, and two deliberately injected failure modes used to prove the runner's
+    failure isolation actually works end to end.
+
+cases:
+  - key: disk-full-single-host
+    input:
+      alert: "disk usage at 95% on host web-01"
+      hosts: ["web-01"]
+    expected:
+      structured_output:
+        root_cause: disk_exhaustion
+      max_latency_ms: 1000
+    tags: ["single-host", "disk"]
+
+  - key: memory-leak-two-hosts
+    input:
+      alert: "memory usage climbing steadily on app-02 and app-03"
+      hosts: ["app-02", "app-03"]
+    expected:
+      structured_output:
+        root_cause: memory_leak
+      max_latency_ms: 1000
+    tags: ["multi-host", "memory"]
+
+  - key: cpu-spike-single-host
+    input:
+      alert: "cpu pegged at 100% on db-01"
+      hosts: ["db-01"]
+    expected:
+      structured_output:
+        root_cause: cpu_spike
+      max_latency_ms: 1000
+    tags: ["single-host", "cpu"]
+
+  - key: network-partition-two-hosts
+    input:
+      alert: "network partition detected between db-01 and db-02"
+      hosts: ["db-01", "db-02"]
+    expected:
+      structured_output:
+        root_cause: network_partition
+      max_latency_ms: 1000
+    tags: ["multi-host", "network"]
+
+  - key: ambiguous-alert-no-keyword-match
+    input:
+      alert: "users reporting intermittent errors on checkout-service"
+      hosts: ["checkout-service"]
+    expected:
+      structured_output:
+        root_cause: unknown
+      max_latency_ms: 1000
+    tags: ["ambiguous"]
+
+  - key: simulated-agent-crash
+    input:
+      alert: "cpu pegged at 100% on db-03"
+      hosts: ["db-03"]
+      inject_failure: error
+    expected:
+      structured_output:
+        root_cause: cpu_spike
+    tags: ["failure-injection"]
+
+  - key: simulated-wrong-answer
+    input:
+      alert: "disk usage at 98% on web-05"
+      hosts: ["web-05"]
+      inject_failure: wrong_answer
+    expected:
+      structured_output:
+        root_cause: disk_exhaustion
+    tags: ["failure-injection", "regression-example"]

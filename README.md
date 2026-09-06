@@ -4,9 +4,13 @@ A production-style platform for answering one question, reliably and repeatably:
 
 > **When I change an AI agent, did it actually get better?**
 
-This repository currently contains **design documentation only**. No application code has
-been implemented yet — see [`docs/roadmap.md`](docs/roadmap.md) for the phased implementation
-plan and [`docs/open-questions.md`](docs/open-questions.md) for unresolved decisions.
+See [`docs/roadmap.md`](docs/roadmap.md) for the phased implementation plan and
+[`docs/open-questions.md`](docs/open-questions.md) for unresolved decisions.
+
+**Status: Phase 1 complete** — a deterministic evaluation loop (schema, stub agent
+adapter, deterministic evaluators, the runner, a CLI) runs end to end against a small
+dataset. No API and no UI yet. See [`docs/phase-notes/phase-1.md`](docs/phase-notes/phase-1.md)
+and [`backend/README.md`](backend/README.md) to run it.
 
 ## Start here
 

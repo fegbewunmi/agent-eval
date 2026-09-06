@@ -12,6 +12,9 @@ recorded (even where marked "open" in `open-questions.md`).
 
 ## Phase 1 — Deterministic core loop, no UI, no LLM judge
 
+**Status: complete.** See `phase-notes/phase-1.md` for what was built, how it deviated
+from this plan, and how the exit criteria were verified.
+
 The smallest slice that proves the whole loop end-to-end:
 
 - Postgres schema + Alembic migrations for the full domain model in `domain-model.md`
