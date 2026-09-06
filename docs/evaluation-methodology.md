@@ -41,6 +41,17 @@ run's summary view should let this matrix be sliced by `EvaluationCase.tags` (e.
 rate for `tool_efficiency` restricted to `high-severity` cases") because an aggregate over
 the whole dataset can hide a regression concentrated in one scenario category.
 
+**`EvaluationResult.passed = None` means "not applicable to this case," not "failed," and
+must be excluded from every mean/pass-rate computation, not just displayed differently.**
+An evaluator reports `passed=None` when the case simply didn't configure the expected
+value that evaluator checks (e.g. `structured_field_minimum` on a case with no
+`structured_output_minimums`) — this is expected for datasets where not every case
+exercises every configured evaluator, and folding those into the average as if they were
+0-scoring failures silently deflates the dimension's mean score. This was caught in
+practice (docs/phase-notes/phase-2.md) when adding evaluators whose expected config isn't
+present on every case dragged `task_correctness`'s mean down for reasons that had nothing
+to do with the agent's actual performance.
+
 ## Regression detection between two runs
 
 Given `EvaluationRun A` (baseline) and `EvaluationRun B` (candidate) over the *same*

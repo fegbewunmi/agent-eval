@@ -1,9 +1,10 @@
 from app.adapters.base import AgentAdapter
+from app.adapters.incident_investigator.adapter import IncidentInvestigatorAdapter
 from app.adapters.stub_agent.adapter import StubAgentAdapter
 
 ADAPTER_REGISTRY: dict[str, type[AgentAdapter]] = {
     "stub-agent": StubAgentAdapter,
-    # future: "incident-investigator": IncidentInvestigatorAdapter, per Phase 2
+    "incident-investigator": IncidentInvestigatorAdapter,
 }
 
 

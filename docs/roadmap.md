@@ -39,6 +39,10 @@ The smallest slice that proves the whole loop end-to-end:
 
 ## Phase 2 — Real adapter + rule-based evaluators + API
 
+**Status: complete.** See `phase-notes/phase-2.md` for what was built, a real bug the live
+integration surfaced, and how the exit criteria were verified against the actual target
+system (not a mock of it).
+
 - Build the real `IncidentInvestigatorAdapter`, including the LangGraph-trace-to-
   `normalized_trace` mapping described in `agent-integration.md`.
 - Add rule-based evaluators (tool selection, tool efficiency, safety-constraint rules)

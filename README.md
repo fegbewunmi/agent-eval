@@ -7,10 +7,15 @@ A production-style platform for answering one question, reliably and repeatably:
 See [`docs/roadmap.md`](docs/roadmap.md) for the phased implementation plan and
 [`docs/open-questions.md`](docs/open-questions.md) for unresolved decisions.
 
-**Status: Phase 1 complete** — a deterministic evaluation loop (schema, stub agent
-adapter, deterministic evaluators, the runner, a CLI) runs end to end against a small
-dataset. No API and no UI yet. See [`docs/phase-notes/phase-1.md`](docs/phase-notes/phase-1.md)
-and [`backend/README.md`](backend/README.md) to run it.
+**Status: Phase 2 complete** — a real adapter for the Incident Investigation Platform
+(github.com/fegbewunmi/ai-operations-center) runs live investigations through
+`POST /runs`, `GET /runs/{id}`, `GET /runs/{id}/cases/{case_run_id}`, and
+`GET /runs/compare`, scored across task_correctness, completion, latency, tool_selection,
+and tool_efficiency. Verified against the real system (real Gemini/Vertex AI calls, real
+Cloud SQL), not just a mock of it. No UI yet — no LLM-as-judge evaluators yet. See
+[`docs/phase-notes/phase-2.md`](docs/phase-notes/phase-2.md) (and
+[`phase-1.md`](docs/phase-notes/phase-1.md)) and [`backend/README.md`](backend/README.md)
+to run it.
 
 ## Start here
 

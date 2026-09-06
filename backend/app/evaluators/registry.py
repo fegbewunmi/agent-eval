@@ -9,12 +9,18 @@ from app.evaluators.base import Evaluator
 from app.evaluators.deterministic.completion import CompletionCheck
 from app.evaluators.deterministic.exact_match import StructuredFieldExactMatch
 from app.evaluators.deterministic.latency import LatencyThreshold
+from app.evaluators.deterministic.structured_field_minimum import StructuredFieldMinimum
+from app.evaluators.rule_based.tool_efficiency import NoRedundantToolCalls
+from app.evaluators.rule_based.tool_selection import RequiredToolCalls
 
 EVALUATOR_REGISTRY: dict[str, type[Evaluator]] = {
     "structured_field_exact_match": StructuredFieldExactMatch,
     "completion_check": CompletionCheck,
     "latency_threshold": LatencyThreshold,
-    # future: rule_based/*, llm_judge/*, custom/* per Phases 2-3
+    "structured_field_minimum": StructuredFieldMinimum,
+    "required_tool_calls": RequiredToolCalls,
+    "no_redundant_tool_calls": NoRedundantToolCalls,
+    # future: llm_judge/*, custom/* per Phase 3
 }
 
 

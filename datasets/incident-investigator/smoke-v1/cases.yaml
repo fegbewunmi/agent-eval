@@ -1,0 +1,49 @@
+dataset:
+  name: incident-investigator-smoke-v1
+  description: >
+    3-case dataset against the real AI Operations Center (docs/roadmap.md Phase 2),
+    reusing that system's own eval fixtures (backend/eval/fixtures/*.json in
+    github.com/fegbewunmi/ai-operations-center) via its /v1/investigations/replay/{id}
+    endpoint. Expected values are taken directly from each fixture's `ground_truth`
+    block rather than invented here, so this dataset can be regenerated or extended
+    whenever that repo adds fixtures.
+
+cases:
+  - key: INC-FD-001-failed-deployment
+    input:
+      fixture_id: INC-FD-001
+    expected:
+      structured_output:
+        root_cause_category: deployment
+        affected_service: payments
+      structured_output_minimums:
+        confidence_pct: 85
+      required_tools: [deployment_agent, telemetry_agent]
+      max_latency_ms: 180000
+    tags: [deployment, easy]
+
+  - key: INC-LR-001-latency-regression
+    input:
+      fixture_id: INC-LR-001
+    expected:
+      structured_output:
+        root_cause_category: configuration
+        affected_service: orders
+      structured_output_minimums:
+        confidence_pct: 75
+      required_tools: [telemetry_agent, knowledge_agent]
+      max_latency_ms: 180000
+    tags: [configuration, easy]
+
+  - key: INC-RL-001-resource-leak
+    input:
+      fixture_id: INC-RL-001
+    expected:
+      structured_output:
+        root_cause_category: resource
+        affected_service: inventory
+      structured_output_minimums:
+        confidence_pct: 75
+      required_tools: [telemetry_agent, deployment_agent, knowledge_agent]
+      max_latency_ms: 180000
+    tags: [resource, easy]

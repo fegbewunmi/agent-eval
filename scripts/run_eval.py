@@ -22,14 +22,29 @@ from app.services.dataset_loader import load_dataset_from_file  # noqa: E402
 from app.services.runner import run_evaluation  # noqa: E402
 from app.services.seed import ensure_agent, ensure_agent_version, ensure_evaluator  # noqa: E402
 
-DEFAULT_EVALUATORS = [
+DETERMINISTIC_EVALUATORS = [
     dict(key="structured_field_exact_match", version="v1", type=EvaluatorType.DETERMINISTIC,
+         dimension="task_correctness"),
+    dict(key="structured_field_minimum", version="v1", type=EvaluatorType.DETERMINISTIC,
          dimension="task_correctness"),
     dict(key="completion_check", version="v1", type=EvaluatorType.DETERMINISTIC,
          dimension="completion"),
     dict(key="latency_threshold", version="v1", type=EvaluatorType.DETERMINISTIC,
          dimension="latency"),
 ]
+
+RULE_BASED_EVALUATORS = [
+    dict(key="required_tool_calls", version="v1", type=EvaluatorType.RULE_BASED,
+         dimension="tool_selection"),
+    dict(key="no_redundant_tool_calls", version="v1", type=EvaluatorType.RULE_BASED,
+         dimension="tool_efficiency"),
+]
+
+# Evaluators absent from a case's `expected` config score as "n/a" (see each evaluator's
+# no-config-configured branch), so it's safe to run the full set against every adapter —
+# the stub-agent dataset just won't exercise required_tool_calls/no_redundant_tool_calls
+# meaningfully since its cases don't set `required_tools`.
+ALL_EVALUATORS = DETERMINISTIC_EVALUATORS + RULE_BASED_EVALUATORS
 
 
 def main() -> None:
@@ -39,6 +54,9 @@ def main() -> None:
     parser.add_argument("--adapter-key", default="stub-agent")
     parser.add_argument("--agent-version", default="v1")
     parser.add_argument("--agent-config", default="{}", help="JSON config for the agent version")
+    parser.add_argument("--timeout-seconds", type=float, default=30.0,
+                         help="Runner-enforced per-case timeout (docs/architecture.md). "
+                              "The incident-investigator adapter needs 180+.")
     args = parser.parse_args()
 
     import json
@@ -51,7 +69,7 @@ def main() -> None:
             session, agent=agent, version_label=args.agent_version,
             config=json.loads(args.agent_config),
         )
-        evaluators = [ensure_evaluator(session, **spec) for spec in DEFAULT_EVALUATORS]
+        evaluators = [ensure_evaluator(session, **spec) for spec in ALL_EVALUATORS]
         session.commit()
 
         run = run_evaluation(
@@ -60,6 +78,7 @@ def main() -> None:
             dataset_id=dataset.id,
             evaluator_ids=[e.id for e in evaluators],
             triggered_by="cli:run_eval.py",
+            timeout_seconds=args.timeout_seconds,
         )
         print_summary(session, run)
     finally:
@@ -77,6 +96,7 @@ def print_summary(session, run) -> None:
 
     case_runs = session.query(CaseRun).filter_by(evaluation_run_id=run.id).all()
     dimension_stats: dict[str, list[float]] = defaultdict(list)
+    dimension_na_counts: dict[str, int] = defaultdict(int)
 
     print(f"\n{'case':38} {'status':10} {'latency_ms':>10}")
     for cr in sorted(case_runs, key=lambda c: c.created_at):
@@ -86,12 +106,25 @@ def print_summary(session, run) -> None:
             evaluator = session.get(Evaluator, result.evaluator_id)
             mark = "PASS" if result.passed else ("FAIL" if result.passed is False else "n/a")
             print(f"    [{evaluator.dimension:16}] {mark:4}  {result.reasoning}")
-            dimension_stats[evaluator.dimension].append(float(result.score))
+            # passed=None means "not applicable to this case" (e.g. no expected value was
+            # configured for this evaluator), not "failed" — excluded from the mean so a
+            # dataset that doesn't exercise every evaluator on every case doesn't get a
+            # misleadingly deflated score. docs/evaluation-methodology.md.
+            if result.passed is None:
+                dimension_na_counts[evaluator.dimension] += 1
+            else:
+                dimension_stats[evaluator.dimension].append(float(result.score))
 
     print("\nPer-dimension summary:")
-    for dimension, scores in sorted(dimension_stats.items()):
-        mean_score = sum(scores) / len(scores)
-        print(f"  {dimension:16} mean_score={mean_score:.2f}  n={len(scores)}")
+    all_dimensions = sorted(set(dimension_stats) | set(dimension_na_counts))
+    for dimension in all_dimensions:
+        scores = dimension_stats[dimension]
+        na = dimension_na_counts[dimension]
+        if scores:
+            mean_score = sum(scores) / len(scores)
+            print(f"  {dimension:16} mean_score={mean_score:.2f}  n={len(scores)}  (n/a={na})")
+        else:
+            print(f"  {dimension:16} mean_score=n/a       n=0  (n/a={na})")
 
 
 if __name__ == "__main__":
