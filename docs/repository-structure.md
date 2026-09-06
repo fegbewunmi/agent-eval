@@ -60,8 +60,8 @@ agent-eval/
 │   │       ├── registry.py
 │   │       ├── deterministic/
 │   │       ├── rule_based/
-│   │       ├── llm_judge/            # added in a later phase, not MVP
-│   │       └── custom/               # added in a later phase, not MVP
+│   │       ├── llm_judge/            # Phase 3 — grounding_judge + the judge model client
+│   │       └── custom/               # not yet needed — add when a concrete case arises
 │   └── tests/
 │       ├── unit/
 │       └── integration/

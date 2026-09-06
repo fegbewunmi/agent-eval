@@ -26,6 +26,16 @@ class Evaluator(ABC):
     key: str
     dimension: str
 
+    def __init__(self, config: dict | None = None) -> None:
+        """`config` is the Evaluator DB row's own config (docs/domain-model.md), analogous
+        to AgentVersion.config for adapters — thresholds for deterministic/rule-based
+        evaluators (which have mostly used case.expected instead so far), or judge
+        model/project/temperature for llm_judge evaluators, which is genuinely
+        evaluator-level rather than case-level. Added in Phase 3 when the first llm_judge
+        evaluator needed it; deterministic/rule-based evaluators are free to ignore it.
+        """
+        self.config = config or {}
+
     @abstractmethod
     def evaluate(
         self,

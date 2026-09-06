@@ -65,9 +65,15 @@ in practice, not before.
    auto-hashing as a safety net once evaluator configs start changing frequently in
    practice — not needed while there are only a handful of hand-maintained evaluators.
 
-8. **Where does the line sit between "adapter" and "target agent deployment"?** E.g. if the
-   Incident Investigation Platform needs to be spun up (containers, dependent services) to
-   be evaluated at all, is standing that up the adapter's job, a documented prerequisite
-   the operator handles before running evaluations, or something in between? Decide when
-   building the real adapter in Phase 2 — likely "documented prerequisite," to keep the
-   adapter itself simple, but not yet confirmed.
+8. **Where does the line sit between "adapter" and "target agent deployment"?** *Resolved
+   in Phase 2:* "documented prerequisite." `IncidentInvestigatorAdapter` assumes the target
+   system's own API is already reachable at `base_url`; nothing in the adapter starts,
+   stops, or configures the target system's backend, database, or credentials. This held
+   up in practice against the real system (docs/phase-notes/phase-2.md).
+
+9. **The LLM-judge client depends on the `gcloud` CLI being installed and authenticated**
+   (ADR-0009), which is true for local development in this project but not guaranteed for
+   any future deployment target (a minimal container typically doesn't ship it). Revisit
+   with the lightweight `google-auth` library — still no full SDK — before deploying
+   anywhere beyond a developer's own machine. Not fixed now because there is no deployment
+   target yet to fix it for.

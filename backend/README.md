@@ -35,12 +35,23 @@ uv run python ../scripts/run_eval.py \
   --agent-name incident-investigator --adapter-key incident-investigator \
   --agent-version v1 \
   --agent-config '{"base_url": "http://localhost:8080", "max_wait_seconds": 180}' \
-  --timeout-seconds 240
+  --timeout-seconds 240 \
+  --judge-project-id ai-ops-center-eb26   # optional: also run grounding_judge (real Vertex AI calls, ADR-0009)
 ```
 
 Either way this loads the dataset, registers the agent/version/evaluators if they don't
 already exist, runs the dataset through the selected adapter, and prints a per-case,
-per-dimension summary.
+per-dimension summary. `--judge-project-id` needs the `gcloud` CLI authenticated with
+Vertex AI access in that project (see ADR-0009); omit it to skip the grounding judge.
+
+## Load a dataset without running it
+
+```bash
+uv run python ../scripts/load_dataset.py --dataset-file ../datasets/<agent>/<name>/cases.yaml
+```
+
+See `../docs/dataset-authoring.md` for the file format and what each evaluator's
+`expected` needs.
 
 ## Run the API
 
@@ -50,7 +61,8 @@ uv run uvicorn app.main:app --port 8080
 
 - `POST /runs` — trigger a run (`agent_version_id`, `dataset_id`, `evaluator_ids`); runs
   synchronously within the request (ADR-0005).
-- `GET /runs/{id}` — run summary: status, per-dimension mean scores, case list.
+- `GET /runs/{id}?tag=<tag>` — run summary: status, per-dimension mean scores, case list;
+  optionally restricted to cases carrying `<tag>` (docs/evaluation-methodology.md).
 - `GET /runs/{id}/cases/{case_run_id}` — full case detail: input, expected, output, trace,
   tool calls, and every evaluator's result.
 - `GET /runs/compare?run_a_id=...&run_b_id=...` — per-case, per-dimension regressions and

@@ -57,6 +57,9 @@ system (not a mock of it).
 
 ## Phase 3 — LLM-as-judge + evaluator versioning + dataset tooling
 
+**Status: complete.** See `phase-notes/phase-3.md` — includes a real grounding failure the
+judge caught live, an edge case worth a human's attention rather than a clean pass/fail.
+
 - Add the `llm_judge` evaluator category with the mitigations required in
   `evaluation-architecture.md` (pinned model/temperature, stored reasoning, calibration
   process).

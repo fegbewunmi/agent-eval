@@ -57,9 +57,19 @@ def main() -> None:
     parser.add_argument("--timeout-seconds", type=float, default=30.0,
                          help="Runner-enforced per-case timeout (docs/architecture.md). "
                               "The incident-investigator adapter needs 180+.")
+    parser.add_argument("--judge-project-id", default=None,
+                         help="If set, also runs grounding_judge (LLM-as-judge, real "
+                              "Vertex AI calls — see ADR-0009) against this GCP project.")
     args = parser.parse_args()
 
     import json
+
+    evaluator_specs = list(ALL_EVALUATORS)
+    if args.judge_project_id:
+        evaluator_specs.append(dict(
+            key="grounding_judge", version="v1", type=EvaluatorType.LLM_JUDGE,
+            dimension="grounding", config={"project_id": args.judge_project_id},
+        ))
 
     session = SessionLocal()
     try:
@@ -69,7 +79,7 @@ def main() -> None:
             session, agent=agent, version_label=args.agent_version,
             config=json.loads(args.agent_config),
         )
-        evaluators = [ensure_evaluator(session, **spec) for spec in ALL_EVALUATORS]
+        evaluators = [ensure_evaluator(session, **spec) for spec in evaluator_specs]
         session.commit()
 
         run = run_evaluation(

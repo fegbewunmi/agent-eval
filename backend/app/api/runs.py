@@ -32,15 +32,16 @@ from app.services.runner import run_evaluation
 router = APIRouter(prefix="/runs", tags=["runs"])
 
 
-def _build_run_summary(session: Session, run: EvaluationRun) -> RunSummaryResponse:
-    stats = dimension_stats_for_run(session, run.id)
-    case_runs = (
+def _build_run_summary(session: Session, run: EvaluationRun, tag: str | None = None) -> RunSummaryResponse:
+    stats = dimension_stats_for_run(session, run.id, tag=tag)
+    case_query = (
         session.query(CaseRun, EvaluationCase.key)
         .join(EvaluationCase, CaseRun.evaluation_case_id == EvaluationCase.id)
         .filter(CaseRun.evaluation_run_id == run.id)
-        .order_by(CaseRun.created_at)
-        .all()
     )
+    if tag is not None:
+        case_query = case_query.filter(EvaluationCase.tags.any(tag))
+    case_runs = case_query.order_by(CaseRun.created_at).all()
     return RunSummaryResponse(
         id=run.id,
         agent_version_id=run.agent_version_id,
@@ -127,11 +128,11 @@ def compare(run_a_id: uuid.UUID, run_b_id: uuid.UUID, session: Session = Depends
 
 
 @router.get("/{run_id}", response_model=RunSummaryResponse)
-def get_run(run_id: uuid.UUID, session: Session = Depends(get_db)) -> RunSummaryResponse:
+def get_run(run_id: uuid.UUID, tag: str | None = None, session: Session = Depends(get_db)) -> RunSummaryResponse:
     run = session.get(EvaluationRun, run_id)
     if run is None:
         raise HTTPException(status_code=404, detail=f"No EvaluationRun with id={run_id}")
-    return _build_run_summary(session, run)
+    return _build_run_summary(session, run, tag=tag)
 
 
 @router.get("/{run_id}/cases/{case_run_id}", response_model=CaseRunDetailResponse)

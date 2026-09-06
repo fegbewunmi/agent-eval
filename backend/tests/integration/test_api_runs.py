@@ -138,3 +138,20 @@ def test_compare_rejects_different_datasets(session):
 
     response = client.get("/runs/compare", params={"run_a_id": run_a["id"], "run_b_id": str(run_b.id)})
     assert response.status_code == 400
+
+
+def test_get_run_filtered_by_tag(session):
+    dataset, agent_version, evaluators = _seed(session)
+    client = _client(session)
+
+    run = client.post("/runs", json={
+        "agent_version_id": str(agent_version.id),
+        "dataset_id": str(dataset.id),
+        "evaluator_ids": [str(e.id) for e in evaluators],
+    }).json()
+
+    filtered = client.get(f"/runs/{run['id']}", params={"tag": "failure-injection"})
+    assert filtered.status_code == 200
+    body = filtered.json()
+    case_keys = {c["case_key"] for c in body["case_runs"]}
+    assert case_keys == {"simulated-agent-crash", "simulated-wrong-answer"}

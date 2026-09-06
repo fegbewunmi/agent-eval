@@ -102,7 +102,7 @@ def _run_evaluators(session: Session, case: EvaluationCase, case_run: CaseRun, e
     any_evaluator_error = False
     for evaluator_row in evaluators:
         try:
-            evaluator_impl = get_evaluator(evaluator_row.key)
+            evaluator_impl = get_evaluator(evaluator_row.key, evaluator_row.config)
             eval_results = evaluator_impl.evaluate(case, execution_result)
         except Exception as exc:  # noqa: BLE001 - one evaluator's failure must not affect others
             any_evaluator_error = True

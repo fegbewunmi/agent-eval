@@ -54,16 +54,26 @@ class ComparisonResult:
     improvements: list[CaseComparison] = field(default_factory=list)
 
 
-def dimension_stats_for_run(session: Session, run_id: uuid.UUID) -> list[DimensionStat]:
+def dimension_stats_for_run(session: Session, run_id: uuid.UUID, tag: str | None = None) -> list[DimensionStat]:
     """Per-dimension mean score for one run, excluding passed=None ("not applicable")
-    results from the mean — see docs/evaluation-methodology.md."""
-    rows = (
+    results from the mean — see docs/evaluation-methodology.md.
+
+    `tag` restricts this to cases carrying that tag (docs/evaluation-methodology.md: "a
+    run's summary view should let this matrix be sliced by EvaluationCase.tags") — an
+    aggregate over the whole dataset can hide a regression concentrated in one scenario
+    category, so this is a real, not cosmetic, capability.
+    """
+    query = (
         session.query(EvaluationResult, Evaluator.dimension)
         .join(Evaluator, EvaluationResult.evaluator_id == Evaluator.id)
         .join(CaseRun, EvaluationResult.case_run_id == CaseRun.id)
         .filter(CaseRun.evaluation_run_id == run_id)
-        .all()
     )
+    if tag is not None:
+        query = query.join(EvaluationCase, CaseRun.evaluation_case_id == EvaluationCase.id).filter(
+            EvaluationCase.tags.any(tag)
+        )
+    rows = query.all()
     by_dimension: dict[str, list[float]] = {}
     na_counts: dict[str, int] = {}
     for result, dimension in rows:

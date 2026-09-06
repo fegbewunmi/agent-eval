@@ -10,6 +10,7 @@ from app.evaluators.deterministic.completion import CompletionCheck
 from app.evaluators.deterministic.exact_match import StructuredFieldExactMatch
 from app.evaluators.deterministic.latency import LatencyThreshold
 from app.evaluators.deterministic.structured_field_minimum import StructuredFieldMinimum
+from app.evaluators.llm_judge.grounding import GroundingJudge
 from app.evaluators.rule_based.tool_efficiency import NoRedundantToolCalls
 from app.evaluators.rule_based.tool_selection import RequiredToolCalls
 
@@ -20,15 +21,16 @@ EVALUATOR_REGISTRY: dict[str, type[Evaluator]] = {
     "structured_field_minimum": StructuredFieldMinimum,
     "required_tool_calls": RequiredToolCalls,
     "no_redundant_tool_calls": NoRedundantToolCalls,
-    # future: llm_judge/*, custom/* per Phase 3
+    "grounding_judge": GroundingJudge,
+    # future: custom/* when a concrete need for it shows up
 }
 
 
-def get_evaluator(key: str) -> Evaluator:
+def get_evaluator(key: str, config: dict | None = None) -> Evaluator:
     try:
         evaluator_cls = EVALUATOR_REGISTRY[key]
     except KeyError as exc:
         raise ValueError(
             f"No evaluator registered for key={key!r}. Known evaluators: {sorted(EVALUATOR_REGISTRY)}"
         ) from exc
-    return evaluator_cls()
+    return evaluator_cls(config=config)
