@@ -58,7 +58,12 @@ export default async function NewRunPage() {
 
         <label>
           Timeout per case (seconds)
-          <input type="number" name="timeout_seconds" defaultValue={30} min={1} />
+          <input type="number" name="timeout_seconds" defaultValue={200} min={1} />
+          <span className="muted" style={{ fontWeight: "normal" }}>
+            30s is enough for the stub agent; the real Incident Investigation Platform
+            adapter needs 180s+ per case (multiple real LLM calls) - lower this only for
+            fast/free adapters.
+          </span>
         </label>
 
         <label>

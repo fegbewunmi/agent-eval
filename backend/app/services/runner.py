@@ -33,30 +33,54 @@ def _utcnow() -> datetime:
 def _execute_with_timeout(adapter, case_input: dict, version_config: dict, timeout_seconds: float) -> AgentExecutionResult:
     """Runner-enforced timeout, independent of whatever the adapter does internally
     (docs/architecture.md "timeout boundary"). Also a defensive catch-all in case an
-    adapter fails to normalize its own exceptions, per ADR-0001."""
+    adapter fails to normalize its own exceptions, per ADR-0001.
+
+    Deliberately NOT `with ThreadPoolExecutor(...) as pool:` - that context manager calls
+    `pool.shutdown(wait=True)` on exit regardless of which branch returns, which blocks
+    this function until the background thread actually finishes even on the timeout path.
+    Python cannot forcibly cancel a running thread, so a "timeout" here can only mean
+    "stop waiting on it," not "stop it" - `shutdown(wait=False)` lets this function return
+    promptly instead of silently blocking for the adapter's full real duration and then
+    discarding whatever it actually produced. Caught in practice (docs/phase-notes/):
+    with the runner-level default of 30s, a real ~60-75s incident-investigator case
+    reported status="timeout" only after actually taking the full ~60-75s anyway.
+
+    Known accepted consequence: a timed-out call's background thread is abandoned, not
+    killed (Python cannot forcibly cancel a running thread) - it keeps running to
+    completion with its result discarded. This means a process hosting the runner won't
+    exit cleanly (e.g. Ctrl+C on a dev server) until every abandoned thread finishes, and
+    a case that "times out" still costs whatever the adapter call itself costs (a real
+    LLM-backed adapter still gets billed for the call it made). Acceptable for this
+    platform's synchronous execution model (ADR-0005); revisit only if timeout-triggering
+    load is ever high enough for accumulated abandoned threads to matter.
+    """
     started = _utcnow()
-    with ThreadPoolExecutor(max_workers=1) as pool:
-        future = pool.submit(adapter.execute, case_input, version_config)
-        try:
-            return future.result(timeout=timeout_seconds)
-        except FutureTimeoutError:
-            latency_ms = (datetime.now(timezone.utc) - started).total_seconds() * 1000
-            return AgentExecutionResult(
-                status="timeout",
-                latency_ms=latency_ms,
-                raw_output={},
-                error=ExecutionError(
-                    type="TimeoutError",
-                    message=f"Adapter did not return within {timeout_seconds}s",
-                ),
-            )
-        except Exception as exc:  # noqa: BLE001 - defensive: adapter should have caught this itself
-            latency_ms = (datetime.now(timezone.utc) - started).total_seconds() * 1000
-            return AgentExecutionResult(
-                status="error",
-                latency_ms=latency_ms,
-                raw_output={},
-                error=ExecutionError(
+    pool = ThreadPoolExecutor(max_workers=1)
+    future = pool.submit(adapter.execute, case_input, version_config)
+    try:
+        result = future.result(timeout=timeout_seconds)
+        pool.shutdown(wait=False)
+        return result
+    except FutureTimeoutError:
+        pool.shutdown(wait=False)
+        latency_ms = (datetime.now(timezone.utc) - started).total_seconds() * 1000
+        return AgentExecutionResult(
+            status="timeout",
+            latency_ms=latency_ms,
+            raw_output={},
+            error=ExecutionError(
+                type="TimeoutError",
+                message=f"Adapter did not return within {timeout_seconds}s",
+            ),
+        )
+    except Exception as exc:  # noqa: BLE001 - defensive: adapter should have caught this itself
+        pool.shutdown(wait=False)
+        latency_ms = (datetime.now(timezone.utc) - started).total_seconds() * 1000
+        return AgentExecutionResult(
+            status="error",
+            latency_ms=latency_ms,
+            raw_output={},
+            error=ExecutionError(
                     type=type(exc).__name__,
                     message=f"Adapter raised without normalizing: {exc}",
                 ),

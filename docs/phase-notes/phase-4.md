@@ -78,6 +78,67 @@ results.
 - **No auth, no per-user anything** - matches `docs/product-overview.md`'s MVP scope
   (single shared internal tool, no orgs/RBAC). The CORS policy reflects this too.
 
+## A serious post-launch bug, found through real usage of the frontend
+
+After Phase 4 shipped, actually using the "trigger a new run" form against the real
+incident-investigator (not the stub agent) surfaced a genuine correctness bug in the
+runner's timeout boundary - the same boundary `docs/architecture.md` documents as a core
+failure-isolation guarantee going back to Phase 1.
+
+**Symptom:** triggering a run against the real adapter with the form's default 30s
+per-case timeout took ~3 minutes total for 3 cases and reported every single case as
+`status=timeout` - even though 30s x 3 should have failed fast, not slow.
+
+**Root cause:** `_execute_with_timeout` (`app/services/runner.py`) used
+`with ThreadPoolExecutor(...) as pool:`. That context manager calls
+`pool.shutdown(wait=True)` on `__exit__` *regardless of which branch returns* - including
+the `except FutureTimeoutError` branch. So even though `future.result(timeout=30)`
+correctly raised at 30 seconds, the function did not actually return to its caller until
+the background thread's real ~60-75s call finished anyway - at which point the function
+threw away the real result and returned a stale "timeout" instead. The configured timeout
+provided zero benefit (the wall-clock wait was unbounded by it) and pure downside (the
+real result was computed and then discarded). This directly contradicted the "timeout
+boundary" guarantee documented since Phase 1 - it existed in the code from Phase 1 onward
+and was never previously exercised against a call slow enough to expose it, since the
+stub agent responds in under a millisecond.
+
+**Fix:** dropped the `with` statement; call `pool.shutdown(wait=False)` explicitly in
+every branch instead, so the function returns as soon as it has an answer (or gives up)
+rather than waiting on the context manager's implicit blocking shutdown. Python cannot
+forcibly cancel a running thread, so an abandoned call's thread keeps running to
+completion in the background with its result discarded - an accepted, documented
+consequence (see the updated docstring), not a further bug to chase: it means a process
+hosting the runner won't exit cleanly until abandoned threads finish, and a real
+LLM-backed adapter still gets billed for a call whose result is thrown away.
+
+**Verified three ways:** an isolated reproduction of the bug pattern (a bare
+`ThreadPoolExecutor` + `time.sleep`, confirming the old pattern makes a caller wait ~2s for
+a 0.2s-configured timeout); a new regression test
+(`tests/unit/test_runner_timeout.py`) proving the fixed function returns promptly instead
+of waiting on a slow fake adapter; and a live call against the real adapter with a 5s
+timeout, confirming a `status=timeout` result now returns in ~5s instead of ~60-90s.
+
+**Also fixed as part of the same investigation:** the run-trigger form's default timeout
+(30s) was a real footgun against the real adapter even *with* the bug fixed - 30s is far
+below the ~60-90s a real investigation needs. Raised the default to 200s (comfortably
+above the adapter's own internal `max_wait_seconds`) and added an inline note explaining
+when to lower it. Re-verified end to end by actually driving the form in a browser against
+all 3 real fixtures with every evaluator (including `grounding_judge`) checked: completed
+in 3.8 minutes, all 3 cases succeeded, grounding scored 0.92.
+
+**A second, unrelated issue surfaced during the same debugging session, worth recording
+separately since it's operational rather than a code bug:** the `cloud-sql-proxy` tunnel
+this environment depends on (see `docs/adr/0009-llm-judge-client-credentials.md`'s
+credential-dependency theme) had silently died, and the target system's `/health` endpoint
+doesn't check its database connection - so it kept reporting healthy while every real
+investigation failed instantly. Restarting the proxy and then the target backend (it
+needed a fresh connection pool, not just the proxy back) resolved it. Not a defect in this
+platform's own code, but a reminder that this platform's own failure-isolation guarantees
+(docs/architecture.md) only cover *this* platform's boundaries - a target agent's own
+health check being non-representative of its actual dependencies is exactly the kind of
+thing an adapter's caller has no way to see through, and isn't something to try to work
+around here.
+
 ## What's still open going into Phase 5
 
 - Proving agent-agnosticism with a second/third structurally different adapter is
