@@ -73,6 +73,10 @@ judge caught live, an edge case worth a human's attention rather than a clean pa
 
 ## Phase 4 — Frontend
 
+**Status: complete.** See `phase-notes/phase-4.md` - one real gap surfaced and closed
+(read-only catalog endpoints the browsing UI needed but the API didn't have yet, plus a
+real display bug caught only by actually looking at a screenshot).
+
 - Next.js app: agent/version/dataset browsing, run triggering + status, the case
   inspector (trace viewer, tool-call timeline, per-dimension results with reasoning), and
   the run comparison view (regressions surfaced first, per `evaluation-methodology.md`).

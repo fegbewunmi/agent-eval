@@ -7,15 +7,16 @@ A production-style platform for answering one question, reliably and repeatably:
 See [`docs/roadmap.md`](docs/roadmap.md) for the phased implementation plan and
 [`docs/open-questions.md`](docs/open-questions.md) for unresolved decisions.
 
-**Status: Phase 3 complete** — a real adapter for the Incident Investigation Platform
+**Status: Phase 4 complete** - a real adapter for the Incident Investigation Platform
 (github.com/fegbewunmi/ai-operations-center) runs live investigations, scored across
-task_correctness, completion, latency, tool_selection, tool_efficiency, and now
-**grounding**, via a real LLM-as-judge evaluator backed by Vertex AI Gemini. Verified
-against the real system throughout — including a real grounding nuance the judge caught
-live (see [`docs/phase-notes/phase-3.md`](docs/phase-notes/phase-3.md)), not a contrived
-test case. No UI yet. See also
-[`phase-2.md`](docs/phase-notes/phase-2.md) / [`phase-1.md`](docs/phase-notes/phase-1.md)
-and [`backend/README.md`](backend/README.md) to run it.
+task_correctness, completion, latency, tool_selection, tool_efficiency, and grounding (a
+real LLM-as-judge evaluator backed by Vertex AI Gemini), all browsable through a Next.js
+frontend: trigger a run, inspect a case's full trace and evaluation results, and compare
+two runs with regressions surfaced first. Verified against the real system throughout -
+see [`docs/phase-notes/phase-4.md`](docs/phase-notes/phase-4.md) (and
+[`phase-3.md`](docs/phase-notes/phase-3.md) / [`phase-2.md`](docs/phase-notes/phase-2.md) /
+[`phase-1.md`](docs/phase-notes/phase-1.md)), [`backend/README.md`](backend/README.md), and
+[`frontend/README.md`](frontend/README.md) to run it.
 
 ## Start here
 

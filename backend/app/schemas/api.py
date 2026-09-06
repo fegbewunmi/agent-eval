@@ -104,3 +104,57 @@ class ComparisonResponse(BaseModel):
     dimension_stats: list[DimensionStats]  # for run_b; run_a's own stats are one GET /runs/{id} away
     regressions: list[CaseComparisonEntry]
     improvements: list[CaseComparisonEntry]
+
+
+# --- Read-only catalog schemas (Phase 4: the frontend needs to browse/select these) ---
+
+
+class AgentVersionSummary(BaseModel):
+    id: uuid.UUID
+    version_label: str
+    description: str | None
+    created_at: datetime
+
+
+class AgentSummary(BaseModel):
+    id: uuid.UUID
+    name: str
+    description: str | None
+    adapter_key: str
+    versions: list[AgentVersionSummary]
+
+
+class DatasetCaseSummary(BaseModel):
+    id: uuid.UUID
+    key: str
+    tags: list[str]
+
+
+class DatasetSummary(BaseModel):
+    id: uuid.UUID
+    name: str
+    description: str | None
+    case_count: int
+
+
+class DatasetDetailResponse(DatasetSummary):
+    cases: list[DatasetCaseSummary]
+
+
+class EvaluatorSummary(BaseModel):
+    id: uuid.UUID
+    key: str
+    version: str
+    type: str
+    dimension: str
+    description: str | None
+
+
+class RunListItem(BaseModel):
+    id: uuid.UUID
+    agent_version_id: uuid.UUID
+    dataset_id: uuid.UUID
+    status: str
+    started_at: datetime | None
+    completed_at: datetime | None
+    triggered_by: str | None

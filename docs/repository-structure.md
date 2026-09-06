@@ -42,11 +42,10 @@ agent-eval/
 │   │   ├── schemas/                  # Pydantic request/response + normalized contracts
 │   │   │   ├── execution_result.py   # AgentExecutionResult, TraceStep, ToolCallRecord
 │   │   │   └── ...
-│   │   ├── api/                      # FastAPI routers, one module per resource
-│   │   │   ├── agents.py
-│   │   │   ├── datasets.py
-│   │   │   ├── runs.py
-│   │   │   └── comparisons.py
+│   │   ├── api/                      # FastAPI routers
+│   │   │   ├── deps.py               # DB session dependency
+│   │   │   ├── runs.py               # trigger/get/list runs, case detail, compare
+│   │   │   └── catalog.py            # read-only agents/datasets/evaluators browsing (Phase 4)
 │   │   ├── services/                 # business logic: run orchestration, comparison/diff
 │   │   │   ├── runner.py             # run_evaluation(...) — the single execution path
 │   │   │   └── comparison.py
@@ -66,7 +65,7 @@ agent-eval/
 │       ├── unit/
 │       └── integration/
 │
-├── frontend/                         # added in a later phase (Phase 4), not MVP
+├── frontend/                         # Phase 4 - Next.js App Router, server components only
 │   ├── package.json
 │   ├── app/                          # Next.js App Router pages
 │   ├── components/
@@ -96,9 +95,13 @@ agent-eval/
   is not application code — it's evaluation content that eval engineers (who may not touch
   backend code at all) author and review, likely with its own PR review norms. See
   ADR-0003 for the file-based-authoring-loaded-into-DB decision.
-- **`frontend/` is called out as "not MVP"** directly in the tree, matching
-  `roadmap.md` — the repository structure documents the target shape, but Phase 1 will not
-  populate this directory yet.
+- **`frontend/` has no client components** as of Phase 4 - every page is a Server
+  Component that fetches directly from the backend API, and the two mutating flows
+  (trigger a run, pick two runs to compare) use native HTML forms with Server Actions
+  instead of client-side state or a fetch library. This is a direct instance of
+  `tech-stack.md`'s deferred styling/state-management decision: no state-management
+  library was needed because nothing in this UI needs client-side state yet. See
+  `docs/phase-notes/phase-4.md`.
 - **No `infra/` beyond a local Postgres compose file** — consistent with `tech-stack.md`:
   no Kubernetes manifests, no Terraform, until there's an actual deployment target that
   needs them.

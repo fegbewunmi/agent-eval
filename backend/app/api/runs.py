@@ -22,6 +22,7 @@ from app.schemas.api import (
     DimensionStats,
     EvaluationResultDetail,
     EvaluatorVersionMismatch,
+    RunListItem,
     RunSummaryResponse,
     ToolCallDetail,
     TriggerRunRequest,
@@ -76,6 +77,29 @@ def trigger_run(body: TriggerRunRequest, session: Session = Depends(get_db)) -> 
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return _build_run_summary(session, run)
+
+
+@router.get("", response_model=list[RunListItem])
+def list_runs(
+    dataset_id: uuid.UUID | None = None,
+    agent_version_id: uuid.UUID | None = None,
+    limit: int = 50,
+    session: Session = Depends(get_db),
+) -> list[RunListItem]:
+    query = session.query(EvaluationRun)
+    if dataset_id is not None:
+        query = query.filter(EvaluationRun.dataset_id == dataset_id)
+    if agent_version_id is not None:
+        query = query.filter(EvaluationRun.agent_version_id == agent_version_id)
+    runs = query.order_by(EvaluationRun.created_at.desc()).limit(limit).all()
+    return [
+        RunListItem(
+            id=r.id, agent_version_id=r.agent_version_id, dataset_id=r.dataset_id,
+            status=r.status.value, started_at=r.started_at, completed_at=r.completed_at,
+            triggered_by=r.triggered_by,
+        )
+        for r in runs
+    ]
 
 
 @router.get("/compare", response_model=ComparisonResponse)

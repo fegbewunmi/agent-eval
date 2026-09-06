@@ -56,20 +56,27 @@ See `../docs/dataset-authoring.md` for the file format and what each evaluator's
 ## Run the API
 
 ```bash
-uv run uvicorn app.main:app --port 8080
+uv run uvicorn app.main:app --port 8000
 ```
 
-- `POST /runs` — trigger a run (`agent_version_id`, `dataset_id`, `evaluator_ids`); runs
-  synchronously within the request (ADR-0005).
-- `GET /runs/{id}?tag=<tag>` — run summary: status, per-dimension mean scores, case list;
-  optionally restricted to cases carrying `<tag>` (docs/evaluation-methodology.md).
-- `GET /runs/{id}/cases/{case_run_id}` — full case detail: input, expected, output, trace,
-  tool calls, and every evaluator's result.
-- `GET /runs/compare?run_a_id=...&run_b_id=...` — per-case, per-dimension regressions and
-  improvements between two runs over the same dataset.
+Port 8000, not 8080 - the Incident Investigation Platform's own backend commonly runs on
+8080 (see its README), and the two are often running side by side during development.
 
-There's no CRUD API for `Agent`/`Dataset`/`Evaluator` yet — register those via
-`app/services/seed.py` (as `scripts/run_eval.py` does) or a DB client directly.
+- `POST /runs` - trigger a run (`agent_version_id`, `dataset_id`, `evaluator_ids`); runs
+  synchronously within the request (ADR-0005).
+- `GET /runs?dataset_id=...&agent_version_id=...` - list recent runs, most recent first.
+- `GET /runs/{id}?tag=<tag>` - run summary: status, per-dimension mean scores, case list;
+  optionally restricted to cases carrying `<tag>` (docs/evaluation-methodology.md).
+- `GET /runs/{id}/cases/{case_run_id}` - full case detail: input, expected, output, trace,
+  tool calls, and every evaluator's result.
+- `GET /runs/compare?run_a_id=...&run_b_id=...` - per-case, per-dimension regressions and
+  improvements between two runs over the same dataset.
+- `GET /agents`, `GET /datasets`, `GET /datasets/{id}`, `GET /evaluators` - read-only
+  catalog browsing (Phase 4), for the frontend's dropdowns and listing pages.
+
+There's no create/update/delete API for `Agent`/`Dataset`/`Evaluator` - register those via
+`app/services/seed.py` (as `scripts/run_eval.py` does) or `scripts/load_dataset.py`
+(datasets, per ADR-0003).
 
 ## Tests
 
