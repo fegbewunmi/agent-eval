@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """CLI entry point for Phase 1: run a dataset against an agent version and print a
 per-dimension summary. Calls the exact same `run_evaluation(...)` that a future API
-endpoint will call (docs/architecture.md — one code path for triggering a run).
+endpoint will call (docs/architecture.md - one code path for triggering a run).
 
 Usage:
     uv run --project backend python ../scripts/run_eval.py \
@@ -45,7 +45,7 @@ RULE_BASED_EVALUATORS = [
 ]
 
 # Evaluators absent from a case's `expected` config score as "n/a" (see each evaluator's
-# no-config-configured branch), so it's safe to run the full set against every adapter —
+# no-config-configured branch), so it's safe to run the full set against every adapter -
 # the stub-agent dataset just won't exercise required_tool_calls/no_redundant_tool_calls
 # meaningfully since its cases don't set `required_tools`.
 ALL_EVALUATORS = DETERMINISTIC_EVALUATORS + RULE_BASED_EVALUATORS
@@ -63,7 +63,7 @@ def main() -> None:
                               "The incident-investigator adapter needs 180+.")
     parser.add_argument("--judge-project-id", default=None,
                          help="If set, also runs grounding_judge (LLM-as-judge, real "
-                              "Vertex AI calls — see ADR-0009) against this GCP project.")
+                              "Vertex AI calls - see ADR-0009) against this GCP project.")
     args = parser.parse_args()
 
     import json
@@ -121,7 +121,7 @@ def print_summary(session, run) -> None:
             mark = "PASS" if result.passed else ("FAIL" if result.passed is False else "n/a")
             print(f"    [{evaluator.dimension:16}] {mark:4}  {result.reasoning}")
             # passed=None means "not applicable to this case" (e.g. no expected value was
-            # configured for this evaluator), not "failed" — excluded from the mean so a
+            # configured for this evaluator), not "failed" - excluded from the mean so a
             # dataset that doesn't exercise every evaluator on every case doesn't get a
             # misleadingly deflated score. docs/evaluation-methodology.md.
             if result.passed is None:

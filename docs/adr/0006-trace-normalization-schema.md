@@ -8,7 +8,7 @@ Different agents represent their execution history completely differently: a Lan
 state machine's node transitions and message history, a simple ReAct loop's
 thought/action/observation sequence, a RAG app's retrieve-then-generate steps. Rule-based
 evaluators (tool selection, tool efficiency) and trace-viewing UI both need *some* common
-structure to operate on generically — but over-specifying that structure would force every
+structure to operate on generically - but over-specifying that structure would force every
 future adapter's author to contort their agent's real execution into a shape it doesn't
 naturally have.
 
@@ -26,7 +26,7 @@ class TraceStep(BaseModel):
 `step_type` and ordering are normalized (every adapter must classify its steps into this
 fixed small set of kinds and emit them in execution order) because that's what generic
 rule-based evaluators and a trace-timeline UI actually need ("did a `handoff` happen before
-a `tool_call`", "render a timeline in order"). `payload` is intentionally an open `dict` —
+a `tool_call`", "render a timeline in order"). `payload` is intentionally an open `dict` -
 its content is adapter-specific and consumed either by humans reading the trace viewer or
 by evaluators written with knowledge of a specific agent's payload shape (acceptable,
 since such an evaluator is inherently agent-specific, unlike the generic rule-based
@@ -45,9 +45,9 @@ than leaving as opaque payload.
   might need, which is exactly the premature generalization the design brief warns
   against; adapters would end up cramming agent-specific data into ill-fitting fixed
   fields or a catch-all "extra" field anyway.
-- **No normalization at all — store each adapter's raw trace format and let evaluators
+- **No normalization at all - store each adapter's raw trace format and let evaluators
   and the UI special-case per agent.** Rejected: this defeats agent-agnosticism (ADR-0001)
-  for exactly the components — rule-based evaluators and the trace UI — that most need to
+  for exactly the components - rule-based evaluators and the trace UI - that most need to
   work generically across agents.
 - **Normalize tool calls only as part of the trace payload, not as a separate typed
   record/table.** Considered, but rejected per the reasoning in `docs/domain-model.md`
@@ -63,7 +63,7 @@ than leaving as opaque payload.
   populating `ToolCallRecord` fields.
 - Generic rule-based evaluators (tool selection, tool efficiency, "no forbidden tool
   after step N") can be written once against `tool_calls`/`step_type`/order and work for
-  every adapter without modification — this is the concrete test of whether this ADR's
+  every adapter without modification - this is the concrete test of whether this ADR's
   balance point was right (Phase 5 of the roadmap, integrating additional adapters).
 - Evaluators or UI features that need to interpret `payload` content are inherently
   agent-specific and should be written with that scoping made explicit (e.g. named/

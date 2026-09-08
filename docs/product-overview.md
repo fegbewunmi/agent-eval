@@ -18,13 +18,13 @@ The Agent Evaluation Platform exists to answer, with evidence instead of vibes:
 > **When I change an AI agent, did it actually get better?**
 
 It does this by treating agent evaluation like a test suite with graded, inspectable
-results instead of a pass/fail CI gate — because "better" is multi-dimensional (correct,
+results instead of a pass/fail CI gate - because "better" is multi-dimensional (correct,
 grounded, safe, efficient, fast, cheap) and collapsing it into one number hides regressions.
 
 ## Intended users
 
-- **Agent developers** (primary) — e.g. the team building the Incident Investigation
-  Platform — who want to know, before shipping, whether a prompt/tool/model change is a
+- **Agent developers** (primary) - e.g. the team building the Incident Investigation
+  Platform - who want to know, before shipping, whether a prompt/tool/model change is a
   net improvement or a regression.
 - **Eval/quality engineers** who curate datasets, tune evaluators, and maintain the
   correctness of the evaluation process itself.
@@ -41,8 +41,8 @@ engineering tool first.
    "incident-investigator") once, and registers each meaningfully distinct build as an
    `AgentVersion` (e.g. a git SHA, a prompt revision, a model swap).
 2. **Define an evaluation dataset.** A developer (or eval engineer) authors `EvaluationCase`
-   records: an input scenario plus the expected behavior — an expected output, an expected
-   tool-call pattern, or a qualitative rubric — grouped into a `Dataset`.
+   records: an input scenario plus the expected behavior - an expected output, an expected
+   tool-call pattern, or a qualitative rubric - grouped into a `Dataset`.
 3. **Run an agent version against a dataset.** The developer triggers an `EvaluationRun`:
    the platform invokes the agent (via its adapter) once per case, capturing output,
    structured data, and a normalized execution trace as a `CaseRun`.
@@ -55,7 +55,7 @@ engineering tool first.
    arguments, and results), and every evaluator's score and reasoning for that case.
 6. **Compare results between versions to detect regressions.** Given two `EvaluationRun`s
    over the same dataset (e.g. v1 vs v2), the platform produces a per-case, per-dimension
-   diff: what got better, what got worse, and what's unchanged — surfaced as regressions,
+   diff: what got better, what got worse, and what's unchanged - surfaced as regressions,
    not just moved averages.
 
 ## MVP scope
@@ -76,14 +76,14 @@ LLM-as-judge to do it:
 - A way to compare two runs over the same dataset and see per-case, per-dimension deltas.
 - Postgres persistence with a schema that will not need to be redesigned when LLM-as-judge,
   additional adapters, or a UI are added later.
-- Synchronous, in-process execution (see ADR-0005) — no task queue, no worker fleet.
+- Synchronous, in-process execution (see ADR-0005) - no task queue, no worker fleet.
 
 ## Explicitly out of scope (for now)
 
 - Multi-tenant organizations, billing, or usage metering.
-- Complex RBAC — at most, a single shared credential/API key for internal use.
+- Complex RBAC - at most, a single shared credential/API key for internal use.
 - Kubernetes, service meshes, or any distributed systems infrastructure.
-- Distributed task queues (Celery, Ray, etc.) — see ADR-0005 for why this is deferred
+- Distributed task queues (Celery, Ray, etc.) - see ADR-0005 for why this is deferred
   rather than ruled out forever.
 - Auto-generating evaluation datasets with an LLM (an obvious future feature; not MVP,
   and mixing it in early would make it hard to trust the datasets used to validate the

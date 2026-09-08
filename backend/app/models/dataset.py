@@ -12,7 +12,7 @@ from app.models.types import utcnow, uuid_pk
 class Dataset(Base):
     """A named collection of EvaluationCases. docs/domain-model.md#dataset
 
-    Mutable by design (ADR-0003) — case edits are expected over time. Reproducibility of
+    Mutable by design (ADR-0003) - case edits are expected over time. Reproducibility of
     historical runs relies on EvaluationRun.dataset_snapshot_hash, not on this being frozen.
     """
 
@@ -31,7 +31,7 @@ class Dataset(Base):
 class EvaluationCase(Base):
     """One scenario: an input plus the expected behavior. docs/domain-model.md#evaluationcase
 
-    `input` and `expected` are JSONB with no DB-enforced shape (ADR-0003) — the adapter
+    `input` and `expected` are JSONB with no DB-enforced shape (ADR-0003) - the adapter
     validates `input`, each evaluator validates the parts of `expected` it consumes.
     """
 

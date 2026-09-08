@@ -1,5 +1,5 @@
 """Request/response schemas for the HTTP API layer. Distinct from
-app/schemas/execution_result.py, which is the adapter normalization contract — these
+app/schemas/execution_result.py, which is the adapter normalization contract - these
 shapes are what the API exposes to clients (docs/architecture.md "Backend API").
 """
 

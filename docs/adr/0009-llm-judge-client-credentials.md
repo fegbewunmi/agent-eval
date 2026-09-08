@@ -9,7 +9,7 @@ call a judge model. `docs/tech-stack.md` already commits to not adding heavyweig
 frameworks or SDKs without a clear architectural need, and `httpx` is already a dependency
 (used by `IncidentInvestigatorAdapter`). The environment this platform runs in already has
 working Google Cloud Application Default Credentials (ADC) via the `gcloud` CLI, and the
-target project already has Vertex AI enabled — reusing that is the path of least new
+target project already has Vertex AI enabled - reusing that is the path of least new
 infrastructure.
 
 ## Decision
@@ -26,7 +26,7 @@ dependency to do the same token refresh in-process.
 
 - **Add the `google-auth` library** for in-process ADC token refresh, avoiding a
   subprocess call. This is the more conventional choice for anything beyond local
-  development — see Consequences below — but was not taken for Phase 3 because the
+  development - see Consequences below - but was not taken for Phase 3 because the
   `gcloud` CLI was already a proven, working credential source in this environment
   (used throughout Phase 2's live verification) and adding a new dependency for exactly
   one token-refresh call, when a zero-dependency option already works, is the kind of
@@ -34,29 +34,29 @@ dependency to do the same token refresh in-process.
 - **Add the full Vertex AI SDK** (`google-cloud-aiplatform` or `vertexai`). Rejected more
   strongly: it is a large dependency for what this platform needs (one JSON-in, JSON-out
   call), and the target Incident Investigation Platform already depends on it for its own
-  agent logic — pulling the same SDK into the *evaluation* platform for an unrelated
+  agent logic - pulling the same SDK into the *evaluation* platform for an unrelated
   purpose blurs a line worth keeping clean (this platform depends on nothing that any
   specific integrated agent depends on).
 - **A different judge provider** (e.g. an Anthropic or OpenAI model instead of Gemini).
-  Not rejected on principle — the `GeminiJudgeClient` interface (`generate_json(prompt,
+  Not rejected on principle - the `GeminiJudgeClient` interface (`generate_json(prompt,
   temperature=...) -> dict`) is intentionally the only piece of `GroundingJudge` that
-  would need to change to swap providers — but not built now because Vertex AI access was
+  would need to change to swap providers - but not built now because Vertex AI access was
   already verified working in this project's GCP setup, and adding a second provider
   integration without a concrete need would be speculative.
 
 ## Consequences
 
 - Judge calls only work where the `gcloud` CLI is installed and already has valid
-  Application Default Credentials — true for local development in this project today, but
+  Application Default Credentials - true for local development in this project today, but
   **not necessarily true of wherever this platform eventually runs in a more permanent
   deployment** (a minimal container image typically doesn't ship the `gcloud` CLI). This
-  is a real, tracked limitation, not an oversight — see `docs/open-questions.md`. Revisit
+  is a real, tracked limitation, not an oversight - see `docs/open-questions.md`. Revisit
   with `google-auth` (still no full SDK needed) before any deployment beyond a developer's
   own machine.
 - `GeminiJudgeClient` is the only place that knows how Vertex AI auth or its REST shape
   works, mirroring how `AgentAdapter` implementations are the only places that know their
-  target agent's specifics — a future second judge provider is a new class behind the same
+  target agent's specifics - a future second judge provider is a new class behind the same
   three-method interface, not a change to `GroundingJudge` or any other evaluator.
 - The subprocess call adds real per-call latency the first time (or after the cache
-  expires) — acceptable for evaluation runs, which are not latency-sensitive in the way a
+  expires) - acceptable for evaluation runs, which are not latency-sensitive in the way a
   production request path would be.

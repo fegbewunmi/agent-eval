@@ -1,7 +1,7 @@
 """The evaluation execution layer ("the runner"). docs/architecture.md, ADR-0005.
 
 One function, `run_evaluation`, is the single code path for "run a dataset against an
-agent version" — called synchronously from a CLI script today (Phase 1) and, later,
+agent version" - called synchronously from a CLI script today (Phase 1) and, later,
 from a FastAPI request handler (Phase 2). No task queue, no distributed workers.
 
 Failure isolation (docs/architecture.md "failure boundaries") is the core discipline

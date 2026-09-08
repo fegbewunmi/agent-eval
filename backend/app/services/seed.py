@@ -26,7 +26,7 @@ def ensure_agent_version(
 ) -> AgentVersion:
     """AgentVersion is immutable (docs/domain-model.md): if version_label already exists
     for this agent, the existing row is returned as-is and `config`/`description` are
-    ignored — register a new version_label for a new config instead."""
+    ignored - register a new version_label for a new config instead."""
     version = (
         session.query(AgentVersion)
         .filter_by(agent_id=agent.id, version_label=version_label)

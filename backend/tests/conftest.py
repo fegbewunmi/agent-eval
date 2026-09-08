@@ -1,4 +1,4 @@
-"""Test DB fixture: uses the same Postgres instance as dev (docs/tech-stack.md — no
+"""Test DB fixture: uses the same Postgres instance as dev (docs/tech-stack.md - no
 separate DB engine for tests), against a dedicated `agent_eval_test` database that is
 schema-created fresh and dropped-clean per test via a transaction rollback.
 """

@@ -47,7 +47,7 @@ agent-eval/
 │   │   │   ├── runs.py               # trigger/get/list runs, case detail, compare
 │   │   │   └── catalog.py            # read-only agents/datasets/evaluators browsing (Phase 4)
 │   │   ├── services/                 # business logic: run orchestration, comparison/diff
-│   │   │   ├── runner.py             # run_evaluation(...) — the single execution path
+│   │   │   ├── runner.py             # run_evaluation(...) - the single execution path
 │   │   │   └── comparison.py
 │   │   ├── adapters/                 # AgentAdapter base + registry + one dir per agent
 │   │   │   ├── base.py               # AgentAdapter ABC
@@ -59,8 +59,8 @@ agent-eval/
 │   │       ├── registry.py
 │   │       ├── deterministic/
 │   │       ├── rule_based/
-│   │       ├── llm_judge/            # Phase 3 — grounding_judge + the judge model client
-│   │       └── custom/               # not yet needed — add when a concrete case arises
+│   │       ├── llm_judge/            # Phase 3 - grounding_judge + the judge model client
+│   │       └── custom/               # not yet needed - add when a concrete case arises
 │   └── tests/
 │       ├── unit/
 │       └── integration/
@@ -74,7 +74,7 @@ agent-eval/
 ├── datasets/                         # dataset content, authored as files, loaded into the DB
 │   └── incident-investigator/
 │       └── v1/
-│           ├── cases.yaml            # or .json — see ADR-0003
+│           ├── cases.yaml            # or .json - see ADR-0003
 │           └── README.md             # what this dataset covers, how it was built
 │
 ├── scripts/
@@ -83,16 +83,16 @@ agent-eval/
 │   └── seed_dev_data.py
 │
 └── infra/
-    └── docker-compose.yml            # local Postgres only — no other infra
+    └── docker-compose.yml            # local Postgres only - no other infra
 ```
 
 ## Notes on the layout
 
-- **`adapters/` and `evaluators/` are peers of `services/`, not buried inside it** —
+- **`adapters/` and `evaluators/` are peers of `services/`, not buried inside it** -
   they are the two extension points of the system (new agents, new scoring logic) and
   deserve to be immediately visible at the top of `app/`.
 - **`datasets/` is a top-level directory, not under `backend/`**, because dataset content
-  is not application code — it's evaluation content that eval engineers (who may not touch
+  is not application code - it's evaluation content that eval engineers (who may not touch
   backend code at all) author and review, likely with its own PR review norms. See
   ADR-0003 for the file-based-authoring-loaded-into-DB decision.
 - **`frontend/` has no client components** as of Phase 4 - every page is a Server
@@ -102,6 +102,6 @@ agent-eval/
   `tech-stack.md`'s deferred styling/state-management decision: no state-management
   library was needed because nothing in this UI needs client-side state yet. See
   `docs/phase-notes/phase-4.md`.
-- **No `infra/` beyond a local Postgres compose file** — consistent with `tech-stack.md`:
+- **No `infra/` beyond a local Postgres compose file** - consistent with `tech-stack.md`:
   no Kubernetes manifests, no Terraform, until there's an actual deployment target that
   needs them.

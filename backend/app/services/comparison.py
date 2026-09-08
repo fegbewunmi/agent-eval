@@ -1,7 +1,7 @@
 """Run-to-run comparison: regression detection between two EvaluationRuns over the same
 dataset. docs/evaluation-methodology.md "Regression detection between two runs".
 
-A comparison is a read-only computation over already-immutable data (ADR-0004) — nothing
+A comparison is a read-only computation over already-immutable data (ADR-0004) - nothing
 here is persisted as its own entity, per the "no separate Comparison entity for MVP"
 decision in docs/domain-model.md point 5.
 """
@@ -56,10 +56,10 @@ class ComparisonResult:
 
 def dimension_stats_for_run(session: Session, run_id: uuid.UUID, tag: str | None = None) -> list[DimensionStat]:
     """Per-dimension mean score for one run, excluding passed=None ("not applicable")
-    results from the mean — see docs/evaluation-methodology.md.
+    results from the mean - see docs/evaluation-methodology.md.
 
     `tag` restricts this to cases carrying that tag (docs/evaluation-methodology.md: "a
-    run's summary view should let this matrix be sliced by EvaluationCase.tags") — an
+    run's summary view should let this matrix be sliced by EvaluationCase.tags") - an
     aggregate over the whole dataset can hide a regression concentrated in one scenario
     category, so this is a real, not cosmetic, capability.
     """
@@ -96,7 +96,7 @@ def dimension_stats_for_run(session: Session, run_id: uuid.UUID, tag: str | None
 
 def _case_dimension_results(session: Session, run_id: uuid.UUID) -> dict[tuple[str, str], tuple[EvaluationResult, Evaluator]]:
     """Maps (case_key, dimension) -> (EvaluationResult, Evaluator) for one run. Assumes at
-    most one evaluator per dimension per case is configured per run — true for every
+    most one evaluator per dimension per case is configured per run - true for every
     evaluator set built so far (docs/phase-notes/); revisit if a run ever configures two
     evaluators reporting the same dimension for the same case.
     """
@@ -151,7 +151,7 @@ def compare_runs(session: Session, run_a_id: uuid.UUID, run_b_id: uuid.UUID) -> 
         )
 
         # Regression/improvement classification is driven by passed transitions, not raw
-        # score deltas — a "not applicable" (passed=None) result on either side means
+        # score deltas - a "not applicable" (passed=None) result on either side means
         # there's nothing to classify, consistent with excluding n/a from dimension means.
         if entry.run_a_passed is True and entry.run_b_passed is False:
             regressions.append(entry)

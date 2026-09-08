@@ -1,14 +1,14 @@
 """Minimal client for Vertex AI's Gemini `generateContent` REST endpoint, used by
 LLM-as-judge evaluators. docs/evaluation-architecture.md's required mitigations (a pinned
 model version, temperature 0) are enforced here once, not left to each evaluator to
-remember — every llm_judge evaluator should call through this client rather than hitting
+remember - every llm_judge evaluator should call through this client rather than hitting
 the API directly.
 
 Auth: shells out to `gcloud auth application-default print-access-token` and caches the
 token for ~45 minutes, rather than adding a Google auth/Vertex AI SDK dependency for one
 REST call. See ADR-0009 for the tradeoff (works cleanly for local dev; requires the gcloud
 CLI to be installed and authenticated wherever this runs, which is a real constraint for
-anything beyond local dev — tracked in docs/open-questions.md).
+anything beyond local dev - tracked in docs/open-questions.md).
 """
 
 import json
@@ -51,7 +51,7 @@ class GeminiJudgeClient:
 
     def generate_json(self, prompt: str, *, temperature: float = 0.0) -> dict:
         """Calls the judge model with responseMimeType=application/json and returns the
-        parsed JSON body. Raises JudgeCallError on any HTTP, network, or parse failure —
+        parsed JSON body. Raises JudgeCallError on any HTTP, network, or parse failure -
         never returns a partially-parsed or guessed result.
         """
         url = (

@@ -1,7 +1,7 @@
 """Unit tests for the real Incident Investigation Platform adapter, against a mocked HTTP
 transport shaped exactly like the target system's real API responses (verified by hand
-against a live instance — see docs/phase-notes/phase-2.md). No live GCP/Vertex AI/Cloud
-SQL calls happen in this test file; that's deliberate (docs/tech-stack.md — tests shouldn't
+against a live instance - see docs/phase-notes/phase-2.md). No live GCP/Vertex AI/Cloud
+SQL calls happen in this test file; that's deliberate (docs/tech-stack.md - tests shouldn't
 depend on external infra or incur LLM cost), and is a separate concern from the adapter's
 correctness, which these tests do cover.
 """
@@ -174,7 +174,7 @@ def test_execute_treats_escalated_as_success_with_escalation_flagged(monkeypatch
 def test_execute_survives_404_race_right_after_starting(monkeypatch):
     """POST /replay(...) returns 202 and starts the graph via asyncio.create_task on the
     target system's side, so the very first GET .../status can 404 before the background
-    task's first checkpoint write lands — observed against a live instance
+    task's first checkpoint write lands - observed against a live instance
     (docs/phase-notes/phase-2.md). This must be tolerated like a non-terminal phase, not
     treated as a hard failure."""
     _patch_client(monkeypatch, _handler_factory(["404", "404", "investigating", "complete"]))

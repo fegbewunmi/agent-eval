@@ -18,4 +18,4 @@ and tradeoff rather than pretending there is one obvious answer."
 
 New ADRs should use [template.md](template.md) and be numbered sequentially. An ADR's
 status can move from `Proposed` → `Accepted` → `Superseded by NNNN`, but its content
-should not be rewritten after acceptance — record a new ADR that supersedes it instead.
+should not be rewritten after acceptance - record a new ADR that supersedes it instead.

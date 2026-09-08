@@ -4,7 +4,7 @@ from app.schemas.execution_result import AgentExecutionResult
 
 
 class CompletionCheck(Evaluator):
-    """Did the agent finish the task at all? docs/evaluation-methodology.md "completion" —
+    """Did the agent finish the task at all? docs/evaluation-methodology.md "completion" -
     deterministic, straight from execution status."""
 
     key = "completion_check"

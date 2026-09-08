@@ -1,6 +1,6 @@
 """FastAPI endpoints wrapping the runner and comparison service. docs/roadmap.md Phase 2.
 
-POST /runs still executes synchronously within the request (ADR-0005) — for the dataset
+POST /runs still executes synchronously within the request (ADR-0005) - for the dataset
 sizes and adapters this platform targets so far, that's a fine tradeoff against standing
 up a task queue; revisit only with evidence a real dataset/adapter needs otherwise.
 """

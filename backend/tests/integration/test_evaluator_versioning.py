@@ -1,10 +1,10 @@
 """Confirms ADR-0008's promise end-to-end: comparing two runs that used different
 versions of the same evaluator key is flagged, the same way dataset drift is flagged
-(ADR-0003) — docs/roadmap.md Phase 3 exit criteria for evaluator versioning.
+(ADR-0003) - docs/roadmap.md Phase 3 exit criteria for evaluator versioning.
 
 Uses the stub-agent dataset with the grounding_judge evaluator specifically because the
 stub agent's structured_output has no `supporting_evidence` field, so GroundingJudge takes
-its "not applicable" early-return path without ever calling a judge model — this test is
+its "not applicable" early-return path without ever calling a judge model - this test is
 about version-mismatch *detection*, not about judge behavior (that's covered by
 test_grounding_judge.py and the live proof in docs/phase-notes/phase-3.md), so no network
 call or mocking is needed here at all.

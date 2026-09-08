@@ -26,7 +26,7 @@ def main() -> None:
         dataset = load_dataset_from_file(session, args.dataset_file)
         session.commit()
         case_count = len(dataset.cases)
-        print(f"Loaded dataset {dataset.name!r} (id={dataset.id}) — {case_count} case(s).")
+        print(f"Loaded dataset {dataset.name!r} (id={dataset.id}) - {case_count} case(s).")
     finally:
         session.close()
 

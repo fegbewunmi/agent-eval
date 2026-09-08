@@ -28,7 +28,7 @@ class Evaluator(ABC):
 
     def __init__(self, config: dict | None = None) -> None:
         """`config` is the Evaluator DB row's own config (docs/domain-model.md), analogous
-        to AgentVersion.config for adapters — thresholds for deterministic/rule-based
+        to AgentVersion.config for adapters - thresholds for deterministic/rule-based
         evaluators (which have mostly used case.expected instead so far), or judge
         model/project/temperature for llm_judge evaluators, which is genuinely
         evaluator-level rather than case-level. Added in Phase 3 when the first llm_judge
@@ -43,6 +43,6 @@ class Evaluator(ABC):
         execution_result: AgentExecutionResult,
     ) -> list[EvaluatorResult]:
         """Score one CaseRun's execution result. May return >1 result only when a single
-        pass naturally produces more than one dimension (discouraged — see
+        pass naturally produces more than one dimension (discouraged - see
         docs/evaluation-architecture.md)."""
         raise NotImplementedError

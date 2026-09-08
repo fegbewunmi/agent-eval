@@ -1,7 +1,7 @@
 """In-process evaluator registry, mirroring app/adapters/registry.py.
 
 An Evaluator *instance* here corresponds to the logic behind one or more `Evaluator` DB
-rows (key, version) — see ADR-0008. The DB row is what a run actually references; this
+rows (key, version) - see ADR-0008. The DB row is what a run actually references; this
 registry is how the runner resolves that row's key to executable code.
 """
 

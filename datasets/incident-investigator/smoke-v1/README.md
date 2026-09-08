@@ -7,7 +7,7 @@ The real-adapter counterpart to `datasets/stub-agent/smoke-v1` (docs/roadmap.md 
 
 Each case replays one of that system's own committed eval fixtures
 (`backend/eval/fixtures/{INC-FD-001,INC-LR-001,INC-RL-001}.json`) via
-`POST /v1/investigations/replay/{fixture_id}` — deterministic evidence (telemetry,
+`POST /v1/investigations/replay/{fixture_id}` - deterministic evidence (telemetry,
 deployment records, knowledge base), non-deterministic reasoning (a real Gemini call per
 node, same as production). `expected` values are copied from each fixture's own
 `ground_truth` block, not invented independently, so this dataset stays honest about what

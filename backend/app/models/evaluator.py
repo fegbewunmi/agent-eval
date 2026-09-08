@@ -14,7 +14,7 @@ class Evaluator(Base):
     """A registered, versioned scorer. docs/domain-model.md#evaluator, ADR-0008.
 
     (key, version) together identify exactly what logic/config produced a given
-    EvaluationResult — a new EvaluationResult-relevant change to config/prompt/logic must
+    EvaluationResult - a new EvaluationResult-relevant change to config/prompt/logic must
     be a new row (new version), never an in-place edit of an existing one.
     """
 

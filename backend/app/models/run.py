@@ -88,7 +88,7 @@ class CaseRun(Base):
 class ToolCall(Base):
     """One tool invocation, extracted from the trace for relational querying.
 
-    docs/domain-model.md#toolcall — kept as its own table only because tool-selection and
+    docs/domain-model.md#toolcall - kept as its own table only because tool-selection and
     tool-efficiency evaluators need to query/count/order these without parsing JSON.
     """
 

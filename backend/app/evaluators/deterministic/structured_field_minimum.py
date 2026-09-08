@@ -4,7 +4,7 @@ from app.schemas.execution_result import AgentExecutionResult
 
 
 class StructuredFieldMinimum(Evaluator):
-    """Checks that numeric fields of structured_output meet a minimum value — e.g. a
+    """Checks that numeric fields of structured_output meet a minimum value - e.g. a
     confidence score the agent must clear. Generalizes beyond confidence: any numeric
     field with a floor. docs/evaluation-architecture.md "deterministic evaluators".
 

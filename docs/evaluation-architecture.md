@@ -19,7 +19,7 @@ class Evaluator(ABC):
 
 An evaluator usually produces one `EvaluationResult` (one dimension), but the interface
 allows returning several if a single pass naturally produces more than one (e.g. an
-LLM-judge prompt that scores both correctness and grounding in one call) — with the
+LLM-judge prompt that scores both correctness and grounding in one call) - with the
 understanding that doing so makes each sub-score harder to reason about independently, so
 it should be the exception, not the default.
 
@@ -36,7 +36,7 @@ exact string match, regex match, JSON-schema validation of `structured_output`, 
 equality within a tolerance, set equality of extracted fields.
 
 **Use for:** cases with a single objectively correct answer or a structured output
-contract — "did the agent extract the correct incident ID," "is `structured_output` valid
+contract - "did the agent extract the correct incident ID," "is `structured_output` valid
 against schema X," "is the reported host name exactly right."
 
 **Do not use for:** anything where multiple phrasings/approaches are legitimately correct,
@@ -44,7 +44,7 @@ or subjective quality dimensions (helpfulness, clarity, tone). Forcing these int
 matches produces false negatives that erode trust in the whole eval suite.
 
 **Properties:** fully deterministic, free, instant, no external dependency. This is why
-they are the only evaluator category in Phase 1 of the roadmap — they let the platform's
+they are the only evaluator category in Phase 1 of the roadmap - they let the platform's
 own correctness be validated without evaluator noise as a confound.
 
 ### Rule-based evaluators
@@ -55,7 +55,7 @@ free-text output: "must call `fetch_logs` before `propose_root_cause`," "must no
 "must complete within N tool calls."
 
 **Use for:** process/procedure correctness, safety constraints expressible as explicit
-rules, tool selection, and tool efficiency — anything that can be checked against the
+rules, tool selection, and tool efficiency - anything that can be checked against the
 structured `tool_calls` list or trace shape without needing to understand free-text
 semantics.
 
@@ -65,7 +65,7 @@ judgment a human would apply instantly. If a rule needs more than a handful of c
 express, that is a signal the dimension actually needs an LLM-as-judge.
 
 **Properties:** deterministic given a fixed trace, fast, free, but only as good as the
-rules — silent under-coverage (a real failure mode the rules don't check for) is the main
+rules - silent under-coverage (a real failure mode the rules don't check for) is the main
 risk, so rule-based evaluator coverage should be reviewed periodically, not "set and
 forget."
 
@@ -82,7 +82,7 @@ present in the trace, rather than being fabricated), and any dimension where "ex
 inherently a description of good behavior rather than an exact value.
 
 **Do not use for:** anything a deterministic or rule-based evaluator can already answer
-more cheaply and reliably — never reach for an LLM judge to check an exact-match-able
+more cheaply and reliably - never reach for an LLM judge to check an exact-match-able
 fact. Also avoid using LLM-as-judge as the *sole* signal for a regression-gating decision;
 it is inherently noisier than the other categories.
 
@@ -91,7 +91,7 @@ it is inherently noisier than the other categories.
   the provider allows) so that re-running the *same* case run through the *same* evaluator
   version gives a stable score.
 - Always store `reasoning` alongside `score` so a human can audit *why* the judge scored
-  something the way it did — an unexplained LLM score is close to useless for debugging.
+  something the way it did - an unexplained LLM score is close to useless for debugging.
 - Version the evaluator (`Evaluator.version`) whenever the rubric prompt or judge model
   changes, so historical results remain attributable to the exact judge that produced them
   (ADR-0008).
@@ -99,26 +99,26 @@ it is inherently noisier than the other categories.
   the judge hasn't drifted or has systematic bias, rather than trusting it blindly.
 
 **Properties:** costs money and time per case, non-deterministic in the general case
-(mitigated above but never eliminated), and requires a working LLM API — this is why it is
+(mitigated above but never eliminated), and requires a working LLM API - this is why it is
 explicitly deferred past Phase 1 of the roadmap (ADR-0007).
 
 ### Custom developer-defined evaluators
 
 An escape hatch: any Python callable conforming to the `Evaluator` interface, registered
 with `type="custom"`. For domain-specific logic that doesn't fit cleanly into the other
-three buckets — e.g. embedding-based semantic similarity, a replay/simulation check, a
+three buckets - e.g. embedding-based semantic similarity, a replay/simulation check, a
 metric specific to one integrated agent.
 
 **Use for:** anything genuinely project-specific that the platform's built-in categories
 don't cover well. This category exists so the platform doesn't need to anticipate every
 possible evaluation need up front.
 
-**Do not use for:** logic that actually is deterministic, rule-based, or LLM-as-judge —
+**Do not use for:** logic that actually is deterministic, rule-based, or LLM-as-judge -
 classify it correctly so it's discoverable and so the mitigations above (e.g. judge
 calibration) still apply where relevant. "Custom" should be a genuine last resort, not a
 place where everything ends up out of convenience.
 
-**Properties:** whatever the developer builds — the platform provides no special
+**Properties:** whatever the developer builds - the platform provides no special
 guarantees for this category beyond the interface contract. Not implemented in MVP
 (Phase 1–2); the interface is designed to allow it later without a schema change (evaluator
 `type` already includes `custom`).

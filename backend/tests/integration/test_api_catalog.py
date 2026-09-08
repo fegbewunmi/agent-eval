@@ -1,4 +1,4 @@
-"""Tests for the read-only catalog endpoints (docs/roadmap.md Phase 4) — browsing only,
+"""Tests for the read-only catalog endpoints (docs/roadmap.md Phase 4) - browsing only,
 no create/update/delete (ADR-0003, docs/phase-notes/phase-2.md)."""
 
 from pathlib import Path

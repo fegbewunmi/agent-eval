@@ -16,7 +16,7 @@ in practice, not before.
 - A single static API key is sufficient authentication for the lifetime of this being an
   internal tool used by one team.
 - "Agent" in this platform means "a thing that takes a structured input and produces an
-  output plus a trace" — broad enough to cover RAG apps, SQL agents, and multi-agent
+  output plus a trace" - broad enough to cover RAG apps, SQL agents, and multi-agent
   systems alike, without further generalization being needed.
 
 ## Open questions
@@ -29,7 +29,7 @@ in practice, not before.
 
 2. **Cost computation source of truth.** Should `CaseRun.cost_usd` ever be *computed* by
    the platform from `token_usage` plus a maintained model-pricing table, for agents that
-   report tokens but not dollar cost — or should the platform only ever display cost that
+   report tokens but not dollar cost - or should the platform only ever display cost that
    the adapter/agent itself reports, treating anything else as out of scope? Computing it
    platform-side adds a pricing-table maintenance burden; not computing it means cost data
    is inconsistently available across agents.
@@ -58,12 +58,12 @@ in practice, not before.
    significance tests. Is this sufficient given expected dataset sizes (tens of cases), or
    will teams want formal statistical treatment once datasets grow into the hundreds?
 
-7. **Evaluator config change vs. evaluator version bump — how strict?** ADR-0008 says
+7. **Evaluator config change vs. evaluator version bump - how strict?** ADR-0008 says
    "bump the version whenever config/prompt/logic changes meaningfully," which leaves
    "meaningfully" as a judgment call. Should this be enforced (e.g. hash the config and
    auto-suffix the version) rather than left to developer discipline? Leaning toward
    auto-hashing as a safety net once evaluator configs start changing frequently in
-   practice — not needed while there are only a handful of hand-maintained evaluators.
+   practice - not needed while there are only a handful of hand-maintained evaluators.
 
 8. **Where does the line sit between "adapter" and "target agent deployment"?** *Resolved
    in Phase 2:* "documented prerequisite." `IncidentInvestigatorAdapter` assumes the target
@@ -74,6 +74,6 @@ in practice, not before.
 9. **The LLM-judge client depends on the `gcloud` CLI being installed and authenticated**
    (ADR-0009), which is true for local development in this project but not guaranteed for
    any future deployment target (a minimal container typically doesn't ship it). Revisit
-   with the lightweight `google-auth` library — still no full SDK — before deploying
+   with the lightweight `google-auth` library - still no full SDK - before deploying
    anywhere beyond a developer's own machine. Not fixed now because there is no deployment
    target yet to fix it for.

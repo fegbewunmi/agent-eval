@@ -1,6 +1,6 @@
 """Regression test for a real bug (docs/phase-notes/phase-3.md): dataset.cases must
 reflect newly-added cases immediately within the same session, not just after a fresh
-query — see the fix in app/services/dataset_loader.py (assign the relationship, not the
+query - see the fix in app/services/dataset_loader.py (assign the relationship, not the
 FK column directly)."""
 
 from pathlib import Path

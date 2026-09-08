@@ -29,7 +29,7 @@ def load_dataset_from_file(session: Session, path: str | Path) -> Dataset:
         case = existing_cases.get(key)
         if case is None:
             # Assigning the relationship (not dataset_id directly) makes SQLAlchemy append
-            # this case to dataset.cases in-memory immediately, via back_populates — not
+            # this case to dataset.cases in-memory immediately, via back_populates - not
             # just on the next fresh load. Setting dataset_id=dataset.id here instead was a
             # real bug in Phase 1's runner (docs/phase-notes/phase-1.md): a case added by
             # FK id doesn't show up in an already-loaded `dataset.cases` collection within

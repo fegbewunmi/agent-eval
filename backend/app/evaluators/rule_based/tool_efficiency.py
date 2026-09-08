@@ -7,7 +7,7 @@ from app.schemas.execution_result import AgentExecutionResult
 
 class NoRedundantToolCalls(Evaluator):
     """Did the agent call the same specialist more than once in one investigation?
-    Needs no case-specific configuration — it's a general efficiency check over whatever
+    Needs no case-specific configuration - it's a general efficiency check over whatever
     trace the agent produced. docs/evaluation-methodology.md "tool efficiency"."""
 
     key = "no_redundant_tool_calls"

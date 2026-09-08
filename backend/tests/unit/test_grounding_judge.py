@@ -1,4 +1,4 @@
-"""Unit tests for the grounding LLM-judge evaluator, against a fake judge client — no
+"""Unit tests for the grounding LLM-judge evaluator, against a fake judge client - no
 live Vertex AI calls here (docs/tech-stack.md: tests shouldn't depend on external infra or
 incur LLM cost). The client is injected directly, same pattern as mocking the incident
 investigator's HTTP transport in test_incident_investigator_adapter.py. Live-call proof is

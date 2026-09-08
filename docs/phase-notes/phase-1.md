@@ -1,4 +1,4 @@
-# Phase 1 notes — deterministic core loop
+# Phase 1 notes - deterministic core loop
 
 Status: complete. This records what was actually built against the plan in
 `docs/roadmap.md`, where it deviated, and how the exit criteria were verified.
@@ -10,12 +10,12 @@ Status: complete. This records what was actually built against the plan in
   initial migration (`backend/alembic/versions/`) creates all nine tables in one pass.
 - **`AgentAdapter`** base interface (`backend/app/adapters/base.py`) + a registry
   (`backend/app/adapters/registry.py`), and the **stub agent adapter**
-  (`backend/app/adapters/stub_agent/`) — a deterministic fake incident investigator used
+  (`backend/app/adapters/stub_agent/`) - a deterministic fake incident investigator used
   in place of the real Incident Investigation Platform, per the plan.
 - **`Evaluator`** base interface (`backend/app/evaluators/base.py`) + registry, and three
   deterministic evaluators (`backend/app/evaluators/deterministic/`):
   `structured_field_exact_match` (task_correctness), `completion_check` (completion), and
-  `latency_threshold` (latency) — covering three of the eight dimensions in
+  `latency_threshold` (latency) - covering three of the eight dimensions in
   `docs/evaluation-methodology.md`; the rest require rule-based or LLM-judge evaluators
   and are correctly deferred to Phase 2/3.
 - **The runner** (`backend/app/services/runner.py`): `run_evaluation(...)` implements the
@@ -37,7 +37,7 @@ Status: complete. This records what was actually built against the plan in
 
 ## Deviations from the original plan
 
-- **No JSON-schema-validation or numeric-tolerance evaluator yet** — only
+- **No JSON-schema-validation or numeric-tolerance evaluator yet** - only
   `structured_field_exact_match` was built. The roadmap's "exact match, JSON schema
   validation, numeric tolerance" was a menu of examples, not a checklist; one general
   field-equality evaluator was sufficient to prove the pattern for Phase 1's dataset. Add
@@ -68,13 +68,13 @@ Status: complete. This records what was actually built against the plan in
   `EvaluationCase` directly by `dataset_id` instead of trusting the relationship cache.
   This is a general lesson for this codebase, not just a one-off fix: don't read an ORM
   relationship collection as a run's data source when the same session may have written to
-  the underlying table by foreign key elsewhere first — query directly.
+  the underlying table by foreign key elsewhere first - query directly.
 
 ## Exit criteria verification
 
 Roadmap Phase 1 exit criteria: *"`run_eval.py` runs a dataset against the stub adapter,
 persists `CaseRun`/`ToolCall`/`EvaluationResult` rows, and prints a per-dimension summary
-— with a deliberately broken agent version as a second test case, to confirm failure
+- with a deliberately broken agent version as a second test case, to confirm failure
 isolation actually works."*
 
 Verified by running `scripts/run_eval.py` against `datasets/stub-agent/smoke-v1/cases.yaml`:
@@ -87,8 +87,8 @@ having been checked by hand.
 
 ## What's still open going into Phase 2
 
-- No FastAPI endpoints yet — everything is triggered via the CLI script, as planned.
-- No rule-based evaluators yet (need `ToolCall` data to check tool selection/efficiency —
+- No FastAPI endpoints yet - everything is triggered via the CLI script, as planned.
+- No rule-based evaluators yet (need `ToolCall` data to check tool selection/efficiency -
   the stub adapter already populates `tool_calls`, so this data is ready to evaluate
   against once Phase 2 builds those evaluators).
 - The real Incident Investigation Platform adapter doesn't exist yet; Phase 1 deliberately

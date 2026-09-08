@@ -31,7 +31,7 @@ The logical system under test (e.g. "incident-investigator"). Stable across vers
 
 ### AgentVersion
 
-A specific, pinned, immutable build of an `Agent` — a git SHA, a prompt revision, a model
+A specific, pinned, immutable build of an `Agent` - a git SHA, a prompt revision, a model
 swap. Immutable once created: if you need to change config, register a new version.
 
 | field | type | notes |
@@ -68,7 +68,7 @@ One scenario: an input to give the agent, and the expected behavior to check for
 | dataset_id | FK → Dataset | |
 | key | text | stable human-readable id within the dataset, e.g. `"disk-full-single-host"` |
 | input | JSONB | whatever the target agent's adapter needs as input |
-| expected | JSONB | expected output / expected tool-call pattern / rubric notes — shape is evaluator-dependent, not enforced by the DB |
+| expected | JSONB | expected output / expected tool-call pattern / rubric notes - shape is evaluator-dependent, not enforced by the DB |
 | tags | text[] | e.g. `["multi-tool", "high-severity"]`, used for segmented reporting |
 | metadata | JSONB | free-form (source, author, notes) |
 | created_at / updated_at | timestamptz | |
@@ -131,7 +131,7 @@ evaluators need to query/count/order tool calls without parsing JSON trace blobs
 
 ### Evaluator
 
-A registered, versioned scorer. Versioned like `AgentVersion` — see "Recommended changes"
+A registered, versioned scorer. Versioned like `AgentVersion` - see "Recommended changes"
 below for why.
 
 | field | type | notes |
@@ -160,22 +160,22 @@ One evaluator's judgment of one `CaseRun`, on one dimension.
 | raw_output | JSONB | evaluator's unprocessed output |
 | created_at | timestamptz | |
 
-## Evaluating the originally proposed model — recommended changes
+## Evaluating the originally proposed model - recommended changes
 
 The prompt's candidate list was: `Agent, AgentVersion, Dataset, EvaluationCase,
 EvaluationRun, CaseRun, Evaluator, EvaluationResult, Trace, ToolCall`. Recommendations:
 
 1. **Drop `Trace` as a separate table; keep it as a schema/concept, not a row.**
-   A `Trace` would be 1:1 with `CaseRun` — there is no relational benefit to splitting it
+   A `Trace` would be 1:1 with `CaseRun` - there is no relational benefit to splitting it
    into its own table, only an extra join. `CaseRun.raw_output` and
    `CaseRun.normalized_trace` (both JSONB) carry what a `Trace` table would have held.
-   "Trace" remains an important *domain concept* — it has its own normalized Pydantic
-   schema, described in `agent-integration.md` — it just isn't its own SQL table. If a
+   "Trace" remains an important *domain concept* - it has its own normalized Pydantic
+   schema, described in `agent-integration.md` - it just isn't its own SQL table. If a
    future need arises for independent trace querying beyond tool calls (e.g. querying
    reasoning steps at scale), promote it then; don't build it speculatively now.
 
 2. **Keep `ToolCall` as its own table, but only because two MVP evaluation dimensions
-   (tool selection, tool efficiency) need to query it relationally** — count calls, check
+   (tool selection, tool efficiency) need to query it relationally** - count calls, check
    ordering, check for forbidden/missing tools. This is the one piece of the trace worth
    the extra table; everything else stays inside `normalized_trace` JSONB.
 
@@ -183,7 +183,7 @@ EvaluationRun, CaseRun, Evaluator, EvaluationResult, Trace, ToolCall`. Recommend
    it were stable, but evaluator logic changes over time just like agent logic does
    (a rubric prompt gets tuned, a rule gets stricter). If `EvaluationResult` rows don't
    record *which version* of an evaluator produced them, a run-to-run comparison can be
-   comparing an agent change confounded with an evaluator change — which defeats the whole
+   comparing an agent change confounded with an evaluator change - which defeats the whole
    purpose of the platform. `Evaluator.version` plus `EvaluationRun.evaluator_ids` freezing
    the exact evaluator rows used addresses this. See ADR-0008.
 
@@ -194,7 +194,7 @@ EvaluationRun, CaseRun, Evaluator, EvaluationResult, Trace, ToolCall`. Recommend
 5. **No separate `Comparison` entity for MVP.** A comparison between two runs is a
    read-only computation over already-immutable data (ADR-0004), not something that needs
    its own stored row. If users later want to save/name/annotate a comparison for sharing,
-   add a lightweight `Comparison` (two run IDs + a name) then — don't build persistence for
+   add a lightweight `Comparison` (two run IDs + a name) then - don't build persistence for
    it before there's a demonstrated need.
 
 6. **`Dataset` mutability is a real open question, not a settled one.** Cases will get
@@ -213,7 +213,7 @@ EvaluationRun, CaseRun, Evaluator, EvaluationResult, Trace, ToolCall`. Recommend
 8. **No per-`ToolCall` `EvaluationResult`.** Evaluators operate at the `CaseRun` level and
    can inspect the full `tool_calls` list to make a judgment (e.g. "was the *set and order*
    of tool calls correct"). A separate evaluation result per individual tool call was
-   considered and rejected as unnecessary granularity for MVP — it multiplies result rows
+   considered and rejected as unnecessary granularity for MVP - it multiplies result rows
    without a clear consumer. Revisit only if a concrete evaluation need requires per-call
    scoring.
 

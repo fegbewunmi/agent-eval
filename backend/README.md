@@ -26,8 +26,8 @@ uv run python ../scripts/run_eval.py \
   --agent-version v1
 ```
 
-Against the real Incident Investigation Platform (requires that system running locally —
-see its own README — and costs real LLM API calls):
+Against the real Incident Investigation Platform (requires that system running locally -
+see its own README - and costs real LLM API calls):
 
 ```bash
 uv run python ../scripts/run_eval.py \

@@ -1,5 +1,5 @@
 """API-level tests for the Phase 2 endpoints (docs/roadmap.md), against the stub-agent
-adapter — deliberately no live GCP/incident-investigator calls here (docs/tech-stack.md).
+adapter - deliberately no live GCP/incident-investigator calls here (docs/tech-stack.md).
 Uses the same DB-per-test-transaction fixture as the runner integration tests, with the
 app's dependency override pointed at that same session so requests see uncommitted data.
 """

@@ -4,8 +4,8 @@ Status: Accepted
 
 ## Context
 
-LLM-as-judge is the most flexible evaluator category — it can approximate a human's
-judgment of open-ended output — and it's tempting to reach for it immediately since many
+LLM-as-judge is the most flexible evaluator category - it can approximate a human's
+judgment of open-ended output - and it's tempting to reach for it immediately since many
 interesting evaluation questions ("is this root-cause explanation actually correct and
 well-grounded") are qualitative. But LLM-as-judge is also the platform's most complex and
 least trustworthy-by-default building block: it costs money per case, is inherently
@@ -25,7 +25,7 @@ validated first (Phase 1–2 of `docs/roadmap.md`), with LLM-as-judge deliberate
 to Phase 3, after the runner, adapter, and comparison logic have already been proven
 correct against noise-free evaluators. When LLM-as-judge is introduced, it comes with the
 mandatory mitigations listed in `docs/evaluation-architecture.md` (pinned model/temperature,
-stored reasoning, evaluator versioning per ADR-0008, periodic human calibration) — it is
+stored reasoning, evaluator versioning per ADR-0008, periodic human calibration) - it is
 not treated as a drop-in fourth evaluator with no additional process around it.
 
 ## Alternatives considered
@@ -42,12 +42,12 @@ not treated as a drop-in fourth evaluator with no additional process around it.
 
 ## Consequences
 
-- Phase 1 can be validated on its own terms — a wrong or missing deterministic result is
-  either a runner bug or an adapter bug, never "maybe the judge was just noisy" —
+- Phase 1 can be validated on its own terms - a wrong or missing deterministic result is
+  either a runner bug or an adapter bug, never "maybe the judge was just noisy" -
   because no LLM-as-judge evaluator exists yet at that point.
 - Some real evaluation needs for the Incident Investigation Platform (e.g. grounding of
   its root-cause narrative) simply cannot be fully assessed until Phase 3. This is an
-  accepted, explicit gap during Phases 1–2, not a silent omission — reviewers of interim
+  accepted, explicit gap during Phases 1–2, not a silent omission - reviewers of interim
   results should read run summaries knowing grounding isn't yet measured.
 - The mitigations required alongside LLM-as-judge (ADR-0008's versioning, calibration)
   are themselves nontrivial process work, correctly scheduled for when the category is

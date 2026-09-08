@@ -5,7 +5,7 @@ from app.schemas.execution_result import AgentExecutionResult
 
 class LatencyThreshold(Evaluator):
     """Did the case complete within an acceptable latency budget?
-    docs/evaluation-methodology.md "latency" — deterministic, from CaseRun.latency_ms.
+    docs/evaluation-methodology.md "latency" - deterministic, from CaseRun.latency_ms.
 
     case.expected shape consumed: {"max_latency_ms": <number>} (optional; if absent this
     evaluator only reports latency, it does not fail the case).

@@ -1,13 +1,13 @@
 """Grounding judge: is the agent's claimed supporting evidence actually backed by the
 evidence it gathered, or fabricated? docs/evaluation-methodology.md "grounding".
 
-This is the first LLM-as-judge evaluator (docs/roadmap.md Phase 3) — see
+This is the first LLM-as-judge evaluator (docs/roadmap.md Phase 3) - see
 docs/evaluation-architecture.md for why grounding specifically needs judgment rather than
 a rule: "is this claim supported by that evidence" requires reading natural language on
 both sides, which a rule-based check can't do without an unbounded pile of special cases.
 
 Unlike the deterministic/rule-based evaluators so far, this one needs no case-specific
-`expected` configuration — it checks the agent's own claims against its own gathered
+`expected` configuration - it checks the agent's own claims against its own gathered
 evidence (self-consistency), so it applies uniformly to any case where the agent produced
 a `supporting_evidence` list and at least one tool call. Any adapter whose
 AgentExecutionResult.structured_output includes a `supporting_evidence: list[str]` field
@@ -23,7 +23,7 @@ from app.schemas.execution_result import AgentExecutionResult
 
 _PROMPT_TEMPLATE = """You are auditing an AI agent's incident-investigation reasoning for fabricated claims.
 
-Evidence the agent actually gathered (tool call results — this is ground truth for this check):
+Evidence the agent actually gathered (tool call results - this is ground truth for this check):
 {evidence}
 
 Claims the agent listed as "supporting evidence" for its conclusion:
@@ -69,7 +69,7 @@ class GroundingJudge(Evaluator):
 
         # A JudgeCallError here propagates to the runner, which isolates it per
         # (case_run, evaluator) exactly like any other evaluator failure
-        # (docs/architecture.md) — never caught here to fabricate a pass/fail.
+        # (docs/architecture.md) - never caught here to fabricate a pass/fail.
         judged = self._client_or_default().generate_json(
             _PROMPT_TEMPLATE.format(
                 evidence=json.dumps(evidence, default=str),

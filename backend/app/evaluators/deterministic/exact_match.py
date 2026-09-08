@@ -1,4 +1,4 @@
-"""Deterministic evaluators. docs/evaluation-architecture.md "deterministic evaluators" —
+"""Deterministic evaluators. docs/evaluation-architecture.md "deterministic evaluators" -
 pure functions over execution_result and case.expected, no judgment involved.
 """
 

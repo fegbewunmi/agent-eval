@@ -1,16 +1,16 @@
-"""Adapter for the AI Operations Center (github.com/fegbewunmi/ai-operations-center) —
+"""Adapter for the AI Operations Center (github.com/fegbewunmi/ai-operations-center) -
 a LangGraph multi-agent incident investigator, invoked over its HTTP API. docs/roadmap.md
 Phase 2, docs/agent-integration.md.
 
 This module is the only place in the evaluation platform allowed to know that the target
-agent is LangGraph-based, calls Gemini via Vertex AI, or persists to Cloud SQL — none of
+agent is LangGraph-based, calls Gemini via Vertex AI, or persists to Cloud SQL - none of
 that leaks past this file, per ADR-0001.
 
 The target system's `POST /v1/investigations` returns 202 immediately and runs the
 investigation graph in the background, so `execute()` has to start it, poll
 `GET .../status` until the graph reaches a terminal phase, then fetch results from the
 findings/timeline/evidence/analysis endpoints. Both graph-terminal outcomes the target
-system defines — "complete" and "escalated" — represent the agent finishing and producing
+system defines - "complete" and "escalated" - represent the agent finishing and producing
 a defined state (see app/graph/routing.py in that repo: both are reached via the graph's
 own END edge, not a crash), so both normalize to AgentExecutionResult(status="success");
 whether an escalation counts as a *good* outcome is left entirely to evaluators, consistent
@@ -46,7 +46,7 @@ _TERMINAL_PHASES = {"complete", "escalated"}
 
 # Maps the target system's TimelineEvent.source (see app/shared/schemas/core.py in that
 # repo) to our normalized step_type envelope (docs/agent-integration.md, ADR-0006).
-# Sources not listed here fall back to "other" rather than raising — new specialist or
+# Sources not listed here fall back to "other" rather than raising - new specialist or
 # control-flow nodes the target system adds later degrade gracefully instead of breaking
 # this adapter.
 _SOURCE_TO_STEP_TYPE = {
@@ -98,7 +98,7 @@ class IncidentInvestigatorAdapter(AgentAdapter):
             )
 
         # Our own measured wall-clock time, not the target system's self-reported elapsed
-        # time — docs/agent-integration.md: latency_ms is always adapter-measured.
+        # time - docs/agent-integration.md: latency_ms is always adapter-measured.
         result.latency_ms = (time.monotonic() - started) * 1000
         return result
 
@@ -114,12 +114,12 @@ class IncidentInvestigatorAdapter(AgentAdapter):
         self, client: httpx.Client, investigation_id: str, poll_interval: float, max_wait: float
     ) -> dict:
         # POST /v1/investigations(/replay/...) returns 202 and starts the graph via
-        # asyncio.create_task — there's an inherent race between that response and the
+        # asyncio.create_task - there's an inherent race between that response and the
         # background task's first checkpoint write, during which GET .../status 404s
         # ("Investigation not found") even though the investigation is genuinely starting.
         # Observed in practice against a live instance (docs/phase-notes/phase-2.md), not
         # a hypothetical: an early 404 is treated the same as a non-terminal phase, not as
-        # a failure — it only becomes a real error if it never resolves within max_wait.
+        # a failure - it only becomes a real error if it never resolves within max_wait.
         deadline = time.monotonic() + max_wait
         while True:
             response = client.get(f"/v1/investigations/{investigation_id}/status")
@@ -182,7 +182,7 @@ class IncidentInvestigatorAdapter(AgentAdapter):
                 "investigation_incomplete": synthesis.get("investigation_incomplete", False),
             }
 
-        # No synthesis was ever produced (e.g. escalated before incident_analysis ran) —
+        # No synthesis was ever produced (e.g. escalated before incident_analysis ran) -
         # GET .../findings returns 409 in this case. Still a normal (if minimal) outcome,
         # not an adapter error: report what's known from /status and flag the gap.
         return status.get("working_hypothesis"), {
@@ -207,7 +207,7 @@ class IncidentInvestigatorAdapter(AgentAdapter):
     def _build_tool_calls(self, evidence: dict) -> list[ToolCallRecord]:
         # Specialist findings (docs/architecture.md's "tool calls" for this multi-agent
         # system) don't carry their own call-order timestamp, only a time_window they
-        # queried over — sequence_index here is a fixed
+        # queried over - sequence_index here is a fixed
         # telemetry -> deployment -> knowledge ordering, a query/display convenience, not
         # an assertion about the agent's true call order. The trace (built from the
         # timeline above) carries the real chronological order.

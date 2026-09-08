@@ -17,7 +17,7 @@ failure modes.
 Formally categorize every `Evaluator` as `deterministic`, `rule_based`, `llm_judge`, or
 `custom` (stored as `Evaluator.type`), with documented guidance on what each is and is not
 for (`docs/evaluation-architecture.md`). All four share one interface and are invoked
-identically by the runner — the category is a classification and selection aid for
+identically by the runner - the category is a classification and selection aid for
 developers, not a different code path in the runner.
 
 ## Alternatives considered

@@ -1,9 +1,9 @@
-"""Stub agent adapter — a deterministic fake "incident investigator" used to validate the
+"""Stub agent adapter - a deterministic fake "incident investigator" used to validate the
 platform itself (runner, schema, evaluators, failure isolation) before the real Incident
 Investigation Platform adapter is built in Phase 2. See docs/roadmap.md Phase 1.
 
 Expected case_input shape (documented for this adapter only; the platform doesn't
-prescribe one — see docs/agent-integration.md):
+prescribe one - see docs/agent-integration.md):
 
     {"alert": "<free text alert>", "hosts": ["host-1", ...]}
 

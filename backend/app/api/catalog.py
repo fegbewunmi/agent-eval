@@ -1,6 +1,6 @@
 """Read-only endpoints for browsing Agents/AgentVersions/Datasets/Evaluators.
 docs/roadmap.md Phase 4: the frontend needs to list and select these; nothing here
-creates/updates/deletes anything — registration still goes through
+creates/updates/deletes anything - registration still goes through
 app/services/seed.py (agents/versions/evaluators) and scripts/load_dataset.py (datasets,
 per ADR-0003's file-authoring decision), consistent with docs/phase-notes/phase-2.md's
 explicit deferral of a full CRUD API until something concretely needs it.
