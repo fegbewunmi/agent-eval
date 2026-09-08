@@ -10,6 +10,10 @@ from app.evaluators.deterministic.completion import CompletionCheck
 from app.evaluators.deterministic.exact_match import StructuredFieldExactMatch
 from app.evaluators.deterministic.latency import LatencyThreshold
 from app.evaluators.deterministic.structured_field_minimum import StructuredFieldMinimum
+from app.evaluators.deterministic.text_contains import (
+    FinalOutputContainsKeywords,
+    RetrievedTextContainsKeywords,
+)
 from app.evaluators.llm_judge.grounding import GroundingJudge
 from app.evaluators.rule_based.tool_efficiency import NoRedundantToolCalls
 from app.evaluators.rule_based.tool_selection import RequiredToolCalls
@@ -22,6 +26,8 @@ EVALUATOR_REGISTRY: dict[str, type[Evaluator]] = {
     "required_tool_calls": RequiredToolCalls,
     "no_redundant_tool_calls": NoRedundantToolCalls,
     "grounding_judge": GroundingJudge,
+    "final_output_contains_keywords": FinalOutputContainsKeywords,
+    "retrieved_text_contains_keywords": RetrievedTextContainsKeywords,
     # future: custom/* when a concrete need for it shows up
 }
 

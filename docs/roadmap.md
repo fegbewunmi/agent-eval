@@ -4,6 +4,12 @@ Phases are ordered so that the platform's own correctness can be validated befor
 sources of nondeterminism (LLM-as-judge) or surface area (a UI, more adapters). Each phase
 should be shippable and useful on its own.
 
+**All planned phases (0-5) are complete.** Phase 5 was explicitly scoped as the closing
+phase — see `phase-notes/phase-5.md`. No Phase 6 is planned; further work (a third
+adapter, revisiting synchronous execution, custom evaluators, calibration tooling) is
+listed under Phase 5 below as explicitly deferred until real evidence justifies it, not
+scheduled.
+
 ## Phase 0 — Design (this deliverable)
 
 Architecture, domain model, ADRs, evaluation methodology, roadmap. No application code.
@@ -86,18 +92,29 @@ real display bug caught only by actually looking at a screenshot).
 
 ## Phase 5 — Prove agent-agnosticism, revisit execution model
 
-- Integrate a second and third adapter for structurally different agents (e.g. a RAG app
-  and a SQL agent) specifically to validate that `AgentExecutionResult` and the adapter
-  interface generalize, per `agent-integration.md`. Any change needed to core code (rather
-  than just a new adapter file) to onboard these is a signal the Phase 1–2 contract was
-  incomplete.
-- Revisit ADR-0005 (synchronous execution) if run volume or dataset size by this point
-  actually justifies background/async execution — only then, with real evidence, not
-  speculatively.
-- Add custom evaluator support if a concrete need has emerged that deterministic/
-  rule-based/LLM-judge don't cover.
-- Consider LLM-judge calibration tooling, and revisit the statistical-caution items in
-  `evaluation-methodology.md` if usage has revealed a real need for them.
+**Status: complete.** See `phase-notes/phase-5.md` — the headline result: the abstraction
+generalized to a second, structurally different real agent (a RAG app, Document Q&A)
+completely unchanged. No `AgentAdapter`/`AgentExecutionResult`/runner/persistence/
+comparison/frontend changes were needed; only a new adapter file and two new
+general-purpose deterministic evaluators, justified by a concrete gap (substring
+containment over free text) rather than added speculatively. No ADR needed to change as a
+result. This is the platform's last planned phase — see "Explicit non-goals" below.
+
+- Integrated one second adapter for a structurally different agent (Document Q&A, a RAG
+  app) to validate that `AgentExecutionResult` and the adapter interface generalize, per
+  `agent-integration.md`. No core-code change was needed to onboard it — confirming the
+  Phase 1–2 contract was complete rather than incidentally incident-investigator-shaped. A
+  third adapter (e.g. a SQL agent) was judged unnecessary once the second one confirmed
+  the pattern; add one later only if a genuinely different agent shape shows up.
+- ADR-0005 (synchronous execution) was deliberately left unchanged — this phase produced
+  no evidence synchronous execution is inadequate (Document Q&A's real queries took
+  2-3 seconds each), consistent with the "only revisit with real evidence" instruction.
+- Custom evaluator support was not added — the one concrete gap this phase found
+  (substring containment in free text) was still cleanly expressible as new
+  `deterministic` evaluators, not a case requiring the `custom` category.
+- LLM-judge calibration tooling and the statistical-caution items in
+  `evaluation-methodology.md` remain not-yet-needed; no usage volume has emerged that
+  would justify them.
 
 ## Explicit non-goals across all phases
 

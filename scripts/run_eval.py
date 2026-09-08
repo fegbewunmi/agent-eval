@@ -31,6 +31,10 @@ DETERMINISTIC_EVALUATORS = [
          dimension="completion"),
     dict(key="latency_threshold", version="v1", type=EvaluatorType.DETERMINISTIC,
          dimension="latency"),
+    dict(key="final_output_contains_keywords", version="v1", type=EvaluatorType.DETERMINISTIC,
+         dimension="task_correctness"),
+    dict(key="retrieved_text_contains_keywords", version="v1", type=EvaluatorType.DETERMINISTIC,
+         dimension="retrieval"),
 ]
 
 RULE_BASED_EVALUATORS = [

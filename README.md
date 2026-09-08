@@ -7,16 +7,20 @@ A production-style platform for answering one question, reliably and repeatably:
 See [`docs/roadmap.md`](docs/roadmap.md) for the phased implementation plan and
 [`docs/open-questions.md`](docs/open-questions.md) for unresolved decisions.
 
-**Status: Phase 4 complete** - a real adapter for the Incident Investigation Platform
-(github.com/fegbewunmi/ai-operations-center) runs live investigations, scored across
-task_correctness, completion, latency, tool_selection, tool_efficiency, and grounding (a
-real LLM-as-judge evaluator backed by Vertex AI Gemini), all browsable through a Next.js
-frontend: trigger a run, inspect a case's full trace and evaluation results, and compare
-two runs with regressions surfaced first. Verified against the real system throughout -
-see [`docs/phase-notes/phase-4.md`](docs/phase-notes/phase-4.md) (and
-[`phase-3.md`](docs/phase-notes/phase-3.md) / [`phase-2.md`](docs/phase-notes/phase-2.md) /
-[`phase-1.md`](docs/phase-notes/phase-1.md)), [`backend/README.md`](backend/README.md), and
-[`frontend/README.md`](frontend/README.md) to run it.
+**Status: all planned phases (0-5) complete.** Two real, structurally different agents are
+integrated end to end: the Incident Investigation Platform
+(github.com/fegbewunmi/ai-operations-center, a multi-agent LangGraph investigation) and
+Document Q&A (github.com/fegbewunmi/document-qa, a single-call RAG app) - both run
+through the exact same adapter/runner/evaluator/persistence/comparison pipeline and the
+same Next.js frontend, with zero platform-core changes needed to support the second one.
+Evaluated dimensions include task_correctness, completion, latency, tool_selection,
+tool_efficiency, grounding (a real LLM-as-judge evaluator backed by Vertex AI Gemini), and
+retrieval. Verified against both real systems throughout - see
+[`docs/phase-notes/phase-5.md`](docs/phase-notes/phase-5.md) (and
+[`phase-4.md`](docs/phase-notes/phase-4.md) / [`phase-3.md`](docs/phase-notes/phase-3.md) /
+[`phase-2.md`](docs/phase-notes/phase-2.md) / [`phase-1.md`](docs/phase-notes/phase-1.md)),
+[`backend/README.md`](backend/README.md), and [`frontend/README.md`](frontend/README.md)
+to run it. No further phases are planned.
 
 ## Start here
 

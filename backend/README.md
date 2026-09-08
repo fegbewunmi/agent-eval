@@ -39,6 +39,19 @@ uv run python ../scripts/run_eval.py \
   --judge-project-id ai-ops-center-eb26   # optional: also run grounding_judge (real Vertex AI calls, ADR-0009)
 ```
 
+Against the real Document Q&A RAG platform (requires that system running locally - see its
+own README - and costs real OpenAI API calls):
+
+```bash
+uv run python ../scripts/run_eval.py \
+  --dataset-file ../datasets/document-qa/resume-v1/cases.yaml \
+  --agent-name document-qa --adapter-key document-qa \
+  --agent-version v1 \
+  --agent-config '{"base_url": "http://localhost:3001"}' \
+  --timeout-seconds 60 \
+  --judge-project-id ai-ops-center-eb26   # optional: also run grounding_judge (real Vertex AI calls, ADR-0009)
+```
+
 Either way this loads the dataset, registers the agent/version/evaluators if they don't
 already exist, runs the dataset through the selected adapter, and prints a per-case,
 per-dimension summary. `--judge-project-id` needs the `gcloud` CLI authenticated with

@@ -1,0 +1,82 @@
+dataset:
+  name: document-qa-resume-v1
+  description: >
+    7-case dataset against the real Document Q&A RAG platform
+    (github.com/fegbewunmi/document-qa), docs/roadmap.md Phase 5 - the second real
+    adapter, deliberately structurally different from the Incident Investigation
+    Platform. The indexed corpus is a real resume PDF (the only real document readily
+    available; the design doc's own "Widget X200" test fixture referenced in that
+    project's docs/DESIGN-DOC.md was never actually committed to the repo or found on
+    disk - see docs/phase-notes/phase-5.md). Expected values were read directly from the
+    resume's own text and fixed before any query was run against the system - not
+    invented after seeing its output.
+
+cases:
+  - key: current-employer
+    input:
+      question: "What company does the candidate currently work for?"
+    expected:
+      structured_output:
+        answerable: true
+      final_output_contains: ["Bloomberg"]
+      max_latency_ms: 30000
+    tags: [grounded, easy]
+
+  - key: graduate-degree-school
+    input:
+      question: "Which university did the candidate attend for their master's degree?"
+    expected:
+      structured_output:
+        answerable: true
+      final_output_contains: ["Texas A&M"]
+      max_latency_ms: 30000
+    tags: [grounded, easy]
+
+  - key: masters-gpa
+    input:
+      question: "What GPA did the candidate achieve in their master's program?"
+    expected:
+      structured_output:
+        answerable: true
+      final_output_contains: ["4.0"]
+      max_latency_ms: 30000
+    tags: [grounded, exact-fact]
+
+  - key: cicd-deployment-improvement
+    input:
+      question: "By what percentage did the candidate reduce deployment time using CI/CD pipelines?"
+    expected:
+      structured_output:
+        answerable: true
+      final_output_contains: ["50%"]
+      max_latency_ms: 30000
+    tags: [grounded, exact-fact]
+
+  - key: vector-databases-experience
+    input:
+      question: "What vector databases does the candidate have experience with?"
+    expected:
+      structured_output:
+        answerable: true
+      final_output_contains: ["pgvector", "Pinecone"]
+      retrieved_text_contains: ["pgvector", "Pinecone"]
+      max_latency_ms: 30000
+    tags: [grounded, retrieval]
+
+  - key: out-of-corpus-refusal
+    input:
+      question: "What is the capital of France?"
+    expected:
+      structured_output:
+        answerable: false
+      max_latency_ms: 30000
+    tags: [refusal, easy]
+
+  - key: unstated-preference-refusal
+    input:
+      question: "What is the candidate's favorite programming language?"
+    expected:
+      structured_output:
+        answerable: false
+      max_latency_ms: 30000
+    tags: [refusal, topically-close]
