@@ -34,8 +34,7 @@ regressed, not just whether an average moved.
 ## Demo
 
 **Recent runs, across both integrated agents:**
-
-![Dashboard showing recent evaluation runs](docs/screenshots/dashboard.png)
+<img width="1395" height="517" alt="image" src="https://github.com/user-attachments/assets/20f6e509-a503-4360-8ae9-528df30cc2c1" />
 
 **Inspecting one case's full result - input, output, every evaluator's reasoning, tool
 calls, and trace:**
