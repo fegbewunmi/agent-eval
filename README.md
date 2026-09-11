@@ -11,12 +11,6 @@ misleading number. Inspect any single failure down to its full execution trace a
 evaluator's reasoning. Diff two versions of an agent and see exactly which cases
 regressed, not just whether an average moved.
 
-**Status: all 5 planned phases complete, and deployed.** Design docs, 10 ADRs, two real,
-structurally different agents integrated end to end, and a live Cloud Run deployment
-(`agent-eval-api`) called by a real external client over the network with real
-authentication - see [Guiding constraints](#guiding-constraints), [Deployment](#deployment),
-and [Documentation](#documentation) below.
-
 ## What it does
 
 1. **Register an agent and its versions.** An agent is a logical system under test (e.g.
@@ -38,12 +32,8 @@ and [Documentation](#documentation) below.
 
 ## Demo
 
-*(A short walkthrough video will go here once recorded. In the meantime, two screenshots
-of the real, running system:)*
-
 **Recent runs, across both integrated agents:**
-
-![Dashboard showing recent evaluation runs](docs/screenshots/dashboard.png)
+<img width="1395" height="517" alt="image" src="https://github.com/user-attachments/assets/20f6e509-a503-4360-8ae9-528df30cc2c1" />
 
 **Inspecting one case's full result - input, output, every evaluator's reasoning, tool
 calls, and trace:**
@@ -54,8 +44,8 @@ calls, and trace:**
 
 | Agent | What it is | Adapter | Integrated |
 |---|---|---|---|
-| **Incident Investigation Platform** ([ai-operations-center](https://github.com/fegbewunmi/ai-operations-center)) | A LangGraph multi-agent incident investigator - a planner coordinates telemetry, deployment, and knowledge specialist agents, then synthesizes a root-cause hypothesis | `app/adapters/incident_investigator/` | Phase 2 |
-| **Document Q&A** ([document-qa](https://github.com/fegbewunmi/document-qa)) | A single-call RAG app - hybrid retrieval + reranking, then a synthesized, cited answer or an honest refusal | `app/adapters/document_qa/` | Phase 5 |
+| **Incident Investigation Platform** ([ai-operations-center](https://github.com/fegbewunmi/ai-operations-center)) | A LangGraph multi-agent incident investigator - a planner coordinates telemetry, deployment, and knowledge specialist agents, then synthesizes a root-cause hypothesis | `app/adapters/incident_investigator/` |
+| **Document Q&A** ([document-qa](https://github.com/fegbewunmi/document-qa)) | A single-call RAG app - hybrid retrieval + reranking, then a synthesized, cited answer or an honest refusal | `app/adapters/document_qa/` |
 
 Both run through the identical runner, evaluator, persistence, comparison, and frontend
 code - the second integration required **zero changes** to any of it. See
@@ -101,8 +91,7 @@ component breakdown and failure-isolation design.
 | Frontend | Next.js (App Router), TypeScript - server components only, no client-side state library |
 | LLM-as-judge | Vertex AI Gemini, called independently of whatever LLM the agent under test uses |
 
-No task queue, no Kubernetes, no billing/orgs/RBAC - see
-[Guiding constraints](#guiding-constraints).
+No task queue, no Kubernetes, no billing/orgs/RBAC.
 
 ## Deployment
 
@@ -182,17 +171,3 @@ one and which requests actually work against it today).
 | [docs/adr/README.md](docs/adr/README.md) | Architecture Decision Record index (10 ADRs) |
 | [docs/phase-notes/](docs/phase-notes/) | What was actually built and verified, phase by phase, including real bugs found |
 | [docs/phase-notes/deployment.md](docs/phase-notes/deployment.md) | The Cloud Run deployment: architecture, auth, config, live verification, a real confirmed limitation |
-
-## Guiding constraints
-
-These were set at the outset and shape every decision in this repo:
-
-- Not a commercial SaaS product: no billing, no organizations, no complex RBAC.
-- No Kubernetes, no distributed task queues, no unnecessary infrastructure.
-- The evaluation platform does **not** use LangGraph, even though the first target system
-  (an Incident Investigation Platform) does. The platform must stay agent-agnostic -
-  proven in Phase 5 by integrating a second, structurally unrelated agent with zero
-  platform-core changes.
-- Prefer simple, explicit abstractions over speculative generality.
-- Where a decision has real tradeoffs, it is recorded (see `docs/adr/`) rather than
-  silently picked.
