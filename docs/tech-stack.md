@@ -55,7 +55,26 @@ deliberately **not** added.
 - **No vector database / embeddings infrastructure** unless and until a custom or
   LLM-judge evaluator specifically needs semantic similarity - not a foreseeable MVP need,
   and not worth standing up speculatively.
-- **No auth provider / identity system.** A single static API key is enough for an
-  internal tool with no multi-tenancy (see `product-overview.md`).
+- **No auth provider / identity system built into the application.** Still true after
+  deployment - zero authentication code exists anywhere in this backend. The deployed
+  service is protected at the platform level instead (Cloud Run IAM), not by adding an
+  API-key or auth-provider dependency to the app itself - see "Deployment" below and
+  `docs/phase-notes/deployment.md`.
 - **No API gateway, service mesh, or multi-service split.** One backend service, one
   frontend, one database.
+
+## Deployment
+
+- **Cloud Run**, not Kubernetes or a VM - one stateless container, matching "no
+  orchestration" above; Cloud Run's request-based scaling fits a low-traffic internal
+  service without adding the operational surface a cluster would. See
+  [ADR-0010](adr/0010-cloud-run-deployment.md).
+- **No new dependencies added for deployment** - `backend/Dockerfile` is the only new
+  file in this repository (`python:3.12-slim`, `libpq-dev`/`gcc` for `psycopg`,
+  `uvicorn --host 0.0.0.0 --port 8080`).
+- **No API key or app-level identity provider added** - authentication is Cloud Run's own
+  IAM (`--no-allow-unauthenticated` + `roles/run.invoker`), external to this codebase
+  entirely. This is a deliberate choice consistent with "no auth provider built into the
+  application" above, not a contradiction of it.
+- **The frontend is not deployed.** Only the backend API has a Cloud Run target;
+  `frontend/` remains local-only.

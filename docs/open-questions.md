@@ -71,9 +71,15 @@ in practice, not before.
    stops, or configures the target system's backend, database, or credentials. This held
    up in practice against the real system (docs/phase-notes/phase-2.md).
 
-9. **The LLM-judge client depends on the `gcloud` CLI being installed and authenticated**
-   (ADR-0009), which is true for local development in this project but not guaranteed for
-   any future deployment target (a minimal container typically doesn't ship it). Revisit
-   with the lightweight `google-auth` library - still no full SDK - before deploying
-   anywhere beyond a developer's own machine. Not fixed now because there is no deployment
-   target yet to fix it for.
+9. **CONFIRMED, no longer hypothetical.** The LLM-judge client's dependency on the `gcloud`
+   CLI (ADR-0009) was flagged here as a risk before any real deployment existed to test it
+   against. It has now been deployed (`agent-eval-api` on Cloud Run, ADR-0010) and the
+   predicted failure reproduces exactly: `grounding_judge` fails on every case with
+   `FileNotFoundError: [Errno 2] No such file or directory: 'gcloud'`, caught cleanly by
+   the runner's per-evaluator failure isolation - the run still completes, every other
+   evaluator's results are correct, only `grounding_judge` silently produces no usable
+   score for that dimension. See `docs/phase-notes/deployment.md` for the exact
+   reproduction. Fix (still not applied - a real, open task, not merely a suggestion
+   anymore): swap the `subprocess.run(["gcloud", ...])` call in `GeminiJudgeClient.
+   _access_token()` for the lightweight `google-auth` library's in-process ADC token
+   refresh, which needs no CLI binary in the container.

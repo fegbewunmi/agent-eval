@@ -53,6 +53,13 @@ dependency to do the same token refresh in-process.
   is a real, tracked limitation, not an oversight - see `docs/open-questions.md`. Revisit
   with `google-auth` (still no full SDK needed) before any deployment beyond a developer's
   own machine.
+
+  **Confirmed live, not hypothetical, as of the Cloud Run deployment** ([ADR-0010](0010-cloud-run-deployment.md)):
+  `grounding_judge` fails on the deployed service with exactly the predicted failure mode
+  - `FileNotFoundError` on the `gcloud` subprocess call, isolated per-evaluator by the
+  runner's existing failure isolation, the run otherwise completing normally. See
+  `docs/phase-notes/deployment.md` for the exact reproduction. The `google-auth` swap
+  named above is now a confirmed, not speculative, fix.
 - `GeminiJudgeClient` is the only place that knows how Vertex AI auth or its REST shape
   works, mirroring how `AgentAdapter` implementations are the only places that know their
   target agent's specifics - a future second judge provider is a new class behind the same

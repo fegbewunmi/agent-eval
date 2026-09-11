@@ -98,6 +98,9 @@ cases there.
 - **The `gcloud` CLI credential dependency (ADR-0009) is a real, tracked limitation**, not
   silently accepted - see `docs/open-questions.md` item 9. Fine for this project's current
   local-development reality; would need `google-auth` before any real deployment.
+  *(Confirmed exactly as predicted once a real deployment happened - see
+  `docs/phase-notes/deployment.md`, written after this phase and describing current
+  system state, not the local-only reality described here.)*
 
 ## What's still open going into Phase 4
 

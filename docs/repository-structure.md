@@ -31,6 +31,7 @@ agent-eval/
 │
 ├── backend/
 │   ├── pyproject.toml
+│   ├── Dockerfile                    # Cloud Run deployment - the only file deployment added, see ADR-0010
 │   ├── alembic/
 │   │   ├── env.py
 │   │   └── versions/
@@ -83,7 +84,10 @@ agent-eval/
 │   └── seed_dev_data.py
 │
 └── infra/
-    └── docker-compose.yml            # local Postgres only - no other infra
+    └── docker-compose.yml            # local Postgres only - the deployed backend uses a
+                                       # database on infrastructure the calling platform
+                                       # operates, not anything provisioned from this repo -
+                                       # see docs/phase-notes/deployment.md
 ```
 
 ## Notes on the layout
@@ -102,6 +106,9 @@ agent-eval/
   `tech-stack.md`'s deferred styling/state-management decision: no state-management
   library was needed because nothing in this UI needs client-side state yet. See
   `docs/phase-notes/phase-4.md`.
-- **No `infra/` beyond a local Postgres compose file** - consistent with `tech-stack.md`:
-  no Kubernetes manifests, no Terraform, until there's an actual deployment target that
-  needs them.
+- **`infra/` still holds only the local Postgres compose file, even after a real
+  deployment target now exists** - deliberately. No Kubernetes manifests, no Terraform,
+  no deploy scripts were added to this repo; deploying the backend needed exactly one
+  new file (`backend/Dockerfile`) plus a small number of `gcloud` commands run once,
+  documented in `docs/phase-notes/deployment.md` rather than checked in as
+  infrastructure-as-code this project doesn't otherwise need.

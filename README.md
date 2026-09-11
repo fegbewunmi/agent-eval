@@ -11,8 +11,10 @@ misleading number. Inspect any single failure down to its full execution trace a
 evaluator's reasoning. Diff two versions of an agent and see exactly which cases
 regressed, not just whether an average moved.
 
-**Status: all 5 planned phases complete.** Design docs, 9 ADRs, and two real, structurally
-different agents integrated end to end - see [Guiding constraints](#guiding-constraints)
+**Status: all 5 planned phases complete, and deployed.** Design docs, 10 ADRs, two real,
+structurally different agents integrated end to end, and a live Cloud Run deployment
+(`agent-eval-api`) called by a real external client over the network with real
+authentication - see [Guiding constraints](#guiding-constraints), [Deployment](#deployment),
 and [Documentation](#documentation) below.
 
 ## What it does
@@ -102,12 +104,28 @@ component breakdown and failure-isolation design.
 No task queue, no Kubernetes, no billing/orgs/RBAC - see
 [Guiding constraints](#guiding-constraints).
 
+## Deployment
+
+The backend is deployed to Cloud Run as `agent-eval-api` (`us-central1`), IAM-authenticated
+- callers need a real Google-signed ID token from a service account granted
+`roles/run.invoker`, not a public endpoint. This was done for a real external caller (the
+[Orion Agent Developer Platform](../agent-dev-platform)) to integrate against a genuinely
+running, network-reachable service rather than a local instance. Full deployment
+architecture, exact config, service-to-service auth, known limitations, and live
+verification evidence: [`docs/phase-notes/deployment.md`](docs/phase-notes/deployment.md)
+and [ADR-0010](docs/adr/0010-cloud-run-deployment.md).
+
+**The frontend is not deployed** - only the backend API has a live target. The `docker
+run` / local Postgres path below remains the only way to run the frontend or to develop
+against this platform locally; deployment did not change local development at all (same
+commands, same `.env` files - see `docs/phase-notes/deployment.md`'s "what stayed
+unchanged").
+
 ## Local setup
 
-Everything currently runs locally. Full instructions, env vars, and how to point either
-adapter at a real running target system are in
-[`backend/README.md`](backend/README.md) and [`frontend/README.md`](frontend/README.md).
-Quick start:
+Full instructions, env vars, and how to point either adapter at a real running target
+system are in [`backend/README.md`](backend/README.md) and
+[`frontend/README.md`](frontend/README.md). Quick start:
 
 ```bash
 # Backend
@@ -141,7 +159,10 @@ uv run python scripts/run_eval.py \
 ```
 
 Prints a per-case, per-dimension summary. The same run is also triggerable through the API
-(`POST /runs`) or the frontend's "New run" page.
+(`POST /runs`) or the frontend's "New run" page - or against the deployed backend directly
+with a valid ID token in the `Authorization` header (see
+[`docs/phase-notes/deployment.md`](docs/phase-notes/deployment.md) for exactly how to mint
+one and which requests actually work against it today).
 
 ## Documentation
 
@@ -158,8 +179,9 @@ Prints a per-case, per-dimension summary. The same run is also triggerable throu
 | [docs/dataset-authoring.md](docs/dataset-authoring.md) | How to write and load an evaluation dataset |
 | [docs/roadmap.md](docs/roadmap.md) | Phased implementation plan (all 5 phases complete) |
 | [docs/open-questions.md](docs/open-questions.md) | Assumptions and unresolved questions, tracked explicitly |
-| [docs/adr/README.md](docs/adr/README.md) | Architecture Decision Record index (9 ADRs) |
+| [docs/adr/README.md](docs/adr/README.md) | Architecture Decision Record index (10 ADRs) |
 | [docs/phase-notes/](docs/phase-notes/) | What was actually built and verified, phase by phase, including real bugs found |
+| [docs/phase-notes/deployment.md](docs/phase-notes/deployment.md) | The Cloud Run deployment: architecture, auth, config, live verification, a real confirmed limitation |
 
 ## Guiding constraints
 

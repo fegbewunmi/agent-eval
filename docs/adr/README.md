@@ -15,6 +15,7 @@ and tradeoff rather than pretending there is one obvious answer."
 | [0007](0007-deterministic-evaluation-vs-llm-as-judge.md) | Deterministic evaluation vs. LLM-as-judge sequencing | Accepted |
 | [0008](0008-evaluator-versioning.md) | Evaluator versioning | Accepted |
 | [0009](0009-llm-judge-client-credentials.md) | LLM-judge client and credential strategy | Accepted |
+| [0010](0010-cloud-run-deployment.md) | Cloud Run deployment: no core architectural change, two real constraints confirmed | Accepted |
 
 New ADRs should use [template.md](template.md) and be numbered sequentially. An ADR's
 status can move from `Proposed` → `Accepted` → `Superseded by NNNN`, but its content

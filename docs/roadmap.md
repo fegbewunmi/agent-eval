@@ -10,6 +10,11 @@ adapter, revisiting synchronous execution, custom evaluators, calibration toolin
 listed under Phase 5 below as explicitly deferred until real evidence justifies it, not
 scheduled.
 
+**Deployed since.** The backend now runs on Cloud Run, for a real external caller - see
+`phase-notes/deployment.md` and [ADR-0010](adr/0010-cloud-run-deployment.md). Not a
+numbered phase (no feature work was scoped or done), but real current system state the
+phases above predate.
+
 ## Phase 0 - Design (this deliverable)
 
 Architecture, domain model, ADRs, evaluation methodology, roadmap. No application code.
